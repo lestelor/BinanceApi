@@ -8,6 +8,19 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import lestelabs.binanceapi.databinding.ActivityMainBinding
+import lestelabs.binanceapi.binance.api.client.BinanceApiRestClient
+
+import lestelabs.binanceapi.binance.api.client.BinanceApiClientFactory
+import lestelabs.binanceapi.binance.api.client.domain.account.Account
+import android.os.StrictMode
+import android.os.StrictMode.ThreadPolicy
+import lestelabs.binanceapi.binance.api.client.domain.account.request.OrderRequest
+
+import lestelabs.binanceapi.binance.api.client.domain.account.Order
+
+
+
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -15,6 +28,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val policy = ThreadPolicy.Builder().permitAll().build()
+        StrictMode.setThreadPolicy(policy)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -31,5 +47,19 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+        init_binance()
+    }
+
+    fun init_binance() {
+        val factory = BinanceApiClientFactory.newInstance("O6TtsJzwkJr2QsecVQZQNcM1KWjMKeSe6YqIFBCupGEDdP5OrwUDbQJJ3bQPDssO", "clZG1nQ5FDIcLuK0KsspwFUTzlg56Gsw6F4maYrxO8yJDcfxVUndHQfF5mPtfTBq")
+        val client = factory.newRestClient()
+
+        val account: Account = client.account
+        //println(account.balances)
+        //println(account.getAssetBalance("ADA").free)
+
+        val openOrders = client.getOpenOrders(OrderRequest("ADAEUR"))
+        println(openOrders)
     }
 }
