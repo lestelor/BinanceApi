@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.concurrent.TimeUnit;
 
+
+
 /**
  * Generates a Binance API implementation based on @see {@link BinanceApiService}.
  */

@@ -1,5 +1,9 @@
 package lestelabs.binanceapi.binance.api.client.impl;
 
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
 import lestelabs.binanceapi.binance.api.client.BinanceApiCallback;
 import lestelabs.binanceapi.binance.api.client.BinanceApiWebSocketClient;
 import lestelabs.binanceapi.binance.api.client.config.BinanceApiConfig;
@@ -26,6 +30,7 @@ public class BinanceApiWebSocketClientImpl implements BinanceApiWebSocketClient,
         this.client = client;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public Closeable onDepthEvent(String symbols, BinanceApiCallback<DepthEvent> callback) {
         final String channel = Arrays.stream(symbols.split(","))
@@ -35,6 +40,7 @@ public class BinanceApiWebSocketClientImpl implements BinanceApiWebSocketClient,
         return createNewWebSocket(channel, new BinanceApiWebSocketListener<>(callback, DepthEvent.class));
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public Closeable onCandlestickEvent(String symbols, CandlestickInterval interval, BinanceApiCallback<CandlestickEvent> callback) {
         final String channel = Arrays.stream(symbols.split(","))
@@ -44,6 +50,7 @@ public class BinanceApiWebSocketClientImpl implements BinanceApiWebSocketClient,
         return createNewWebSocket(channel, new BinanceApiWebSocketListener<>(callback, CandlestickEvent.class));
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public Closeable onAggTradeEvent(String symbols, BinanceApiCallback<AggTradeEvent> callback) {
         final String channel = Arrays.stream(symbols.split(","))
                 .map(String::trim)
@@ -56,6 +63,7 @@ public class BinanceApiWebSocketClientImpl implements BinanceApiWebSocketClient,
         return createNewWebSocket(listenKey, new BinanceApiWebSocketListener<>(callback, UserDataUpdateEvent.class));
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public Closeable onTickerEvent(String symbols, BinanceApiCallback<TickerEvent> callback) {
         final String channel = Arrays.stream(symbols.split(","))
@@ -71,6 +79,7 @@ public class BinanceApiWebSocketClientImpl implements BinanceApiWebSocketClient,
         }));
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public Closeable onBookTickerEvent(String symbols, BinanceApiCallback<BookTickerEvent> callback) {
         final String channel = Arrays.stream(symbols.split(","))

@@ -24,21 +24,46 @@ public class CandlestickEventSerializer extends JsonSerializer<CandlestickEvent>
     
     // Write candlestick data
     gen.writeObjectFieldStart("k");
+
     gen.writeNumberField("t", candlestickEvent.getOpenTime());
     gen.writeNumberField("T", candlestickEvent.getCloseTime());
+
     gen.writeStringField("i", candlestickEvent.getIntervalId());
     gen.writeNumberField("f", candlestickEvent.getFirstTradeId());
     gen.writeNumberField("L", candlestickEvent.getLastTradeId());
+
     gen.writeStringField("o", candlestickEvent.getOpen());
     gen.writeStringField("c", candlestickEvent.getClose());
     gen.writeStringField("h", candlestickEvent.getHigh());
     gen.writeStringField("l", candlestickEvent.getLow());
     gen.writeStringField("v", candlestickEvent.getVolume());
     gen.writeNumberField("n", candlestickEvent.getNumberOfTrades());
+
     gen.writeBooleanField("x", candlestickEvent.getBarFinal());
+
     gen.writeStringField("q", candlestickEvent.getQuoteAssetVolume());
     gen.writeStringField("V", candlestickEvent.getTakerBuyBaseAssetVolume());
     gen.writeStringField("Q", candlestickEvent.getTakerBuyQuoteAssetVolume());
+    gen.writeStringField("s", candlestickEvent.getStatus());
     gen.writeEndObject();
+
+   /* gen.writeObjectFieldStart("0");
+    gen.writeNumberField("a", Double.parseDouble(candlestickEvent.getOpenTime()));
+    gen.writeNumberField("b", Double.parseDouble(candlestickEvent.getCloseTime()));
+*//*    gen.writeStringField("i", candlestickEvent.getIntervalId());
+    gen.writeNumberField("f", candlestickEvent.getFirstTradeId());
+    gen.writeNumberField("L", candlestickEvent.getLastTradeId());*//*
+    gen.writeStringField("c", candlestickEvent.getOpen());
+    gen.writeStringField("d", candlestickEvent.getClose());
+    gen.writeStringField("e", candlestickEvent.getHigh());
+    gen.writeStringField("f", candlestickEvent.getLow());
+    gen.writeStringField("g", candlestickEvent.getVolume());
+    gen.writeNumberField("h", Double.parseDouble(candlestickEvent.getNumberOfTrades()));
+    *//*    gen.writeBooleanField("x", candlestickEvent.getBarFinal());*//*
+    gen.writeStringField("i", candlestickEvent.getQuoteAssetVolume());
+    gen.writeStringField("j", candlestickEvent.getTakerBuyBaseAssetVolume());
+    gen.writeStringField("k", candlestickEvent.getTakerBuyQuoteAssetVolume());
+    gen.writeStringField("l", candlestickEvent.getStatus());
+    gen.writeEndObject();*/
   }
 }

@@ -44,6 +44,9 @@ public class CandlestickEventDeserializer extends JsonDeserializer<CandlestickEv
     candlestickEvent.setQuoteAssetVolume(candlestickNode.get("q").asText());
     candlestickEvent.setTakerBuyBaseAssetVolume(candlestickNode.get("V").asText());
     candlestickEvent.setTakerBuyQuoteAssetVolume(candlestickNode.get("Q").asText());
+    candlestickEvent.setStatus(candlestickNode.get("s").asText());
+
+
 
     return candlestickEvent;
   }

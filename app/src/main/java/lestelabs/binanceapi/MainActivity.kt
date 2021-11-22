@@ -14,12 +14,14 @@ import lestelabs.binanceapi.binance.api.client.BinanceApiClientFactory
 import lestelabs.binanceapi.binance.api.client.domain.account.Account
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
+import android.util.Log
 import lestelabs.binanceapi.binance.api.client.domain.account.request.OrderRequest
 
 import lestelabs.binanceapi.binance.api.client.domain.account.Order
-
-
-
+import lestelabs.binanceapi.binance.api.client.domain.market.Candlestick
+import lestelabs.binanceapi.binance.api.client.domain.market.CandlestickInterval
+import lestelabs.binanceapi.binance.examples.CandlesticksCacheExample
+import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -56,10 +58,30 @@ class MainActivity : AppCompatActivity() {
         val client = factory.newRestClient()
 
         val account: Account = client.account
+        //Log.d(TAG,"binance balances " + account.balances)
+        Log.d(TAG,"binance balance ADA" + account.getAssetBalance("ADA").free)
         //println(account.balances)
         //println(account.getAssetBalance("ADA").free)
 
-        val openOrders = client.getOpenOrders(OrderRequest("ADAEUR"))
-        println(openOrders)
+        //val openOrders = client.getOpenOrders(OrderRequest("ADAEUR"))
+        //Log.d(TAG, "binance open orders $openOrders")
+
+        //val candlesticksCacheExample = CandlesticksCacheExample("ETHBTC", CandlestickInterval.ONE_MINUTE);
+        //Log.d(TAG, "binance candle ADA $candlesticksCacheExample")
+
+        val symbol = "ADAEUR"
+        val interval = CandlestickInterval.HOURLY
+        val candlestickBars = client.getCandlestickBars(symbol.toUpperCase(), interval)
+
+        Log.d(TAG, "binance candle ADA " + candlestickBars[0])
+        val candlesticksCache = TreeMap<Long, Candlestick>()
+        for (candlestickBar in candlestickBars) {
+            candlesticksCache[candlestickBar.aOpenTime] = candlestickBar
+        }
+
+    }
+
+    companion object {
+        const val TAG = "MainActivity"
     }
 }
