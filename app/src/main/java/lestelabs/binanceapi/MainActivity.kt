@@ -21,6 +21,8 @@ import lestelabs.binanceapi.binance.api.client.domain.account.Order
 import lestelabs.binanceapi.binance.api.client.domain.market.Candlestick
 import lestelabs.binanceapi.binance.api.client.domain.market.CandlestickInterval
 import lestelabs.binanceapi.binance.examples.CandlesticksCacheExample
+import lestelabs.binanceapi.calculations.Indicators
+import java.lang.Exception
 import java.util.*
 
 
@@ -59,7 +61,7 @@ class MainActivity : AppCompatActivity() {
 
         val account: Account = client.account
         //Log.d(TAG,"binance balances " + account.balances)
-        Log.d(TAG,"binance balance ADA" + account.getAssetBalance("ADA").free)
+        Log.d(TAG,"binance balance ADA " + account.getAssetBalance("ADA").free)
         //println(account.balances)
         //println(account.getAssetBalance("ADA").free)
 
@@ -71,13 +73,32 @@ class MainActivity : AppCompatActivity() {
 
         val symbol = "ADAEUR"
         val interval = CandlestickInterval.HOURLY
-        val candlestickBars = client.getCandlestickBars(symbol.toUpperCase(), interval)
 
-        Log.d(TAG, "binance candle ADA " + candlestickBars[0])
-        val candlesticksCache = TreeMap<Long, Candlestick>()
+
+        try {
+            val candleStickBars = client.getCandlestickBars(symbol.toUpperCase(), interval)
+            val candlesticksClosePrice= DoubleArray(candleStickBars.size)
+
+            for (i in 0 until candleStickBars.size-1) {
+                candlesticksClosePrice[i] = candleStickBars[i].eClose.toDouble()
+            }
+            Indicators.rsi(candlesticksClosePrice,100)
+            Indicators.movingAverage(candlesticksClosePrice,20)
+        } catch (e:Exception) {
+            Log.d(TAG, "binance candlestick error $e")
+        }
+
+
+        val bbbb=1
+        //Log.d(TAG, "binance candle ADA " + candlestickBars[0])
+/*        val candlesticksCache = TreeMap<Long, Candlestick>()
         for (candlestickBar in candlestickBars) {
             candlesticksCache[candlestickBar.aOpenTime] = candlestickBar
-        }
+        }*/
+
+
+
+
 
     }
 
