@@ -9,15 +9,6 @@ import kotlin.math.absoluteValue
 
 object Indicators {
     val core = Core()
-    /**
-     * The total number of periods to generate data for.
-     */
-    const val TOTAL_PERIODS = 100
-
-    /**
-     * The number of periods to average together.
-     */
-    const val PERIODS_AVERAGE = 30
 
 
     fun rsi(prices: DoubleArray, period: Int): DoubleArray {
@@ -47,11 +38,12 @@ object Indicators {
         val begin = MInteger()
         val length = MInteger()
         val out = DoubleArray(closePrice.size)
-        val retCode = core.sma(0, closePrice.size-1 , closePrice, periodsAverage, begin, length, out)
+        val outCorrect = DoubleArray(closePrice.size)
+        val retCode = core.sma(0, closePrice.size-1, closePrice, periodsAverage, begin, length, out)
         if (retCode == RetCode.Success) {
             println("Output Start Period: " + begin.value)
             println("Output End Period: " + (begin.value + length.value - 1))
-            for (i in begin.value until begin.value + length.value) {
+            for (i in begin.value until begin.value + length.value ) {
                 val line = StringBuilder()
                 line.append("Period #")
                 line.append(i)
@@ -60,10 +52,11 @@ object Indicators {
                 line.append(" mov_avg=")
                 line.append(out[i - begin.value])
                 println(line.toString())
+                outCorrect[i] = out[i - begin.value]
             }
         } else {
-            println("Error")
+            println("TALIB Error")
         }
-        return out
+        return outCorrect
     }
 }

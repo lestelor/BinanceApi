@@ -4,6 +4,9 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Personal/Programacion/AndroidStudioProjects/BinanceApi/app/src/main/res/layout/activity_main.xml" value="0.13360507246376813" />
+        <entry key="..\:/Personal/Programacion/AndroidStudioProjects/BinanceApi/app/src/main/res/layout/fragment_dashboard.xml" value="0.1" />
+        <entry key="..\:/Personal/Programacion/AndroidStudioProjects/BinanceApi/app/src/main/res/layout/fragment_home.xml" value="0.1" />
+        <entry key="..\:/Personal/Programacion/AndroidStudioProjects/BinanceApi/app/src/main/res/layout/fragment_notifications.xml" value="0.1" />
       </map>
     </option>
   </component>
