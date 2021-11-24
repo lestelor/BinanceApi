@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
         navView.setupWithNavController(navController)
 
         spinner = findViewById(R.id.spinner1)
-        val items = arrayOf("ADAEUR", "BTCEUR", "ETHEUR")
+        val items = arrayOf("ADAEUR", "BTCEUR", "ETHEUR", "DOGEEUR")
         //create an adapter to describe how the items are displayed, adapters are used in several places in android.
         //There are multiple variations of this, but this is the basic variant.
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, items)
