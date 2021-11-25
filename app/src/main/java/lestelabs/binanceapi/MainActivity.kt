@@ -126,10 +126,10 @@ class MainActivity : AppCompatActivity() {
             val yAxis: MutableList<DoubleArray> = mutableListOf()
             yAxis.add(candlesticksClosePrice)
             yAxis.add (Indicators.movingAverage(candlesticksClosePrice,20))
-            Charts().linearChart(findViewById(R.id.graphView1), xAxis, yAxis, 20)
+            Charts(this).linearChart(findViewById(R.id.graphView1), xAxis, yAxis, 20)
 
             yAxis.add(Indicators.rsi(candlesticksClosePrice,20))
-            Charts().linearChart(findViewById(R.id.graphView2), xAxis, mutableListOf(yAxis[2]), 20)
+            Charts(this).linearChart(findViewById(R.id.graphView2), xAxis, mutableListOf(yAxis[2]), 20)
 
             textView1.text = "sma: " + yAxis[1][yAxis[1].size-1].toString() + " rsi: " + yAxis[2][yAxis[2].size-1].toString()
 
