@@ -3,6 +3,8 @@ package lestelabs.binanceapi.charts
 
 import android.content.Context
 import android.graphics.Color
+import android.graphics.DashPathEffect
+import android.graphics.Paint
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
@@ -29,49 +31,43 @@ class Charts(context: Context) {
     val mContext = context
 
 
-    fun linearChart(graph: GraphView, xAxis: LongArray, yAxis:MutableList<DoubleArray>, offset: Int) {
+    fun linearChart(graph: GraphView, xAxis: LongArray, yAxis:DoubleArray, offset: Int, color: Int, dotted:Boolean) {
+        val series: LineGraphSeries<DataPoint> = LineGraphSeries()
 
-        var minY = 50000.0
-        var maxY = 0.0
-        val series: MutableList<LineGraphSeries<DataPoint>> = mutableListOf()
-
-
-        for (i in yAxis.indices) {
-            series.add(LineGraphSeries<DataPoint>())
-            for (j in 0+offset .. yAxis[i].size-1) {
-                val dataPoint = DataPoint(Date(xAxis[j]),yAxis[i][j])
-                series[i].appendData(dataPoint, true,xAxis.size-offset)
+            for (j in 0+offset .. yAxis.size-1) {
+                val dataPoint = DataPoint(Date(xAxis[j]),yAxis[j])
+                series.appendData(dataPoint, true,xAxis.size-offset)
             }
-
-
-                minY = Tools().findMin(yAxis[i], offset, minY)
-                maxY = Tools().findMax(yAxis[i], offset, maxY)
-
-            series[i].color = lineColors[i]
-            graph.addSeries(series[i])
+            series.color = color
+        if (dotted) {
+            val paint: Paint = Paint();
+            paint.style = Paint.Style.STROKE;
+            paint.strokeWidth = 5f;
+            paint.pathEffect = DashPathEffect(floatArrayOf(0.008f, 0.005f), 0F)
+            paint.color = color
+            series.isDrawAsPath = true
+            series.setCustomPaint(paint)
         }
-
-        graph.gridLabelRenderer.numHorizontalLabels = 10;
-        if (yAxis.size > 1) {
-            graph.viewport.setMinY(minY*0.8)
-            graph.viewport.setMaxY(maxY)
-            graph.viewport.isYAxisBoundsManual = true;
-            graph.viewport.isXAxisBoundsManual = true;
-
-            graph.gridLabelRenderer.labelFormatter =
-                DateAsXAxisLabelFormatter(mContext, SimpleDateFormat("yyyy-MM-dd HH:mm:ss"))
-
-            graph.gridLabelRenderer.numVerticalLabels = 5
-            graph.gridLabelRenderer.setHorizontalLabelsAngle(90);
-        } else {
-            graph.gridLabelRenderer.isHorizontalLabelsVisible = false
-        }
-
-
-
-
+            graph.addSeries(series)
     }
 
+    fun linearChartSettings(graph: GraphView, minY:Double, maxY:Double) {
+        graph.gridLabelRenderer.numHorizontalLabels = 10;
+        graph.viewport.setMinY(minY*0.8)
+        graph.viewport.setMaxY(maxY)
+        graph.viewport.isYAxisBoundsManual = true;
+        graph.viewport.isXAxisBoundsManual = true;
+        if (minY == 0.0) {
+            graph.gridLabelRenderer.labelFormatter =
+                DateAsXAxisLabelFormatter(mContext, SimpleDateFormat(""))
+        } else {
+            graph.gridLabelRenderer.labelFormatter =
+                DateAsXAxisLabelFormatter(mContext, SimpleDateFormat("yyyy-MM-dd HH:mm:ss"))
+        }
+        graph.gridLabelRenderer.numVerticalLabels = 5
+        graph.gridLabelRenderer.setHorizontalLabelsAngle(90);
+        //if(minY == 0.0) graph.gridLabelRenderer.isHorizontalLabelsVisible = false
+    }
 
 
     fun setBarChart(barChart: BarChart) {
