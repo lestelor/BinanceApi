@@ -1,26 +1,20 @@
-package lestelabs.binanceapi.calculations
+package lestelabs.binanceapi.charts
 
 
 import android.content.Context
 import android.graphics.Color
-import android.util.Log
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.utils.ColorTemplate
-import com.jjoe64.graphview.DefaultLabelFormatter
 import com.jjoe64.graphview.GraphView
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
-import lestelabs.binanceapi.R
 import lestelabs.binanceapi.tools.Tools
-import java.text.Format
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.math.min
-import lestelabs.binanceapi.MainActivity
 
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter
 
@@ -42,7 +36,6 @@ class Charts(context: Context) {
         val series: MutableList<LineGraphSeries<DataPoint>> = mutableListOf()
 
 
-
         for (i in yAxis.indices) {
             series.add(LineGraphSeries<DataPoint>())
             for (j in 0+offset .. yAxis[i].size-1) {
@@ -50,24 +43,33 @@ class Charts(context: Context) {
                 series[i].appendData(dataPoint, true,xAxis.size-offset)
             }
 
-            minY = Tools().findMin(yAxis[i], offset, minY)
-            maxY = Tools().findMax(yAxis[i], offset, maxY)
+
+                minY = Tools().findMin(yAxis[i], offset, minY)
+                maxY = Tools().findMax(yAxis[i], offset, maxY)
 
             series[i].color = lineColors[i]
             graph.addSeries(series[i])
         }
 
-        graph.viewport.setMinY(minY*0.8)
-        graph.viewport.setMaxY(maxY*1.2)
+        graph.gridLabelRenderer.numHorizontalLabels = 10;
+        if (yAxis.size > 1) {
+            graph.viewport.setMinY(minY*0.8)
+            graph.viewport.setMaxY(maxY)
+            graph.viewport.isYAxisBoundsManual = true;
+            graph.viewport.isXAxisBoundsManual = true;
+
+            graph.gridLabelRenderer.labelFormatter =
+                DateAsXAxisLabelFormatter(mContext, SimpleDateFormat("yyyy-MM-dd HH:mm:ss"))
+
+            graph.gridLabelRenderer.numVerticalLabels = 5
+            graph.gridLabelRenderer.setHorizontalLabelsAngle(90);
+        } else {
+            graph.gridLabelRenderer.isHorizontalLabelsVisible = false
+        }
 
 
-        graph.viewport.isYAxisBoundsManual = true;
-        graph.viewport.isXAxisBoundsManual = true;
 
-        graph.gridLabelRenderer.labelFormatter =
-            DateAsXAxisLabelFormatter(mContext, SimpleDateFormat("yyyy-MM-dd HH:mm:ss"))
-        graph.gridLabelRenderer.numHorizontalLabels = 5;
-        graph.gridLabelRenderer.setHorizontalLabelsAngle(90);
+
     }
 
 

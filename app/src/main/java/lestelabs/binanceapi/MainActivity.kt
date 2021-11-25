@@ -8,7 +8,6 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import lestelabs.binanceapi.databinding.ActivityMainBinding
-import lestelabs.binanceapi.binance.api.client.BinanceApiRestClient
 
 import lestelabs.binanceapi.binance.api.client.BinanceApiClientFactory
 import lestelabs.binanceapi.binance.api.client.domain.account.Account
@@ -18,17 +17,11 @@ import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Spinner
-import com.jjoe64.graphview.GraphView
-import lestelabs.binanceapi.binance.api.client.domain.account.request.OrderRequest
 
-import lestelabs.binanceapi.binance.api.client.domain.account.Order
-import lestelabs.binanceapi.binance.api.client.domain.market.Candlestick
 import lestelabs.binanceapi.binance.api.client.domain.market.CandlestickInterval
-import lestelabs.binanceapi.binance.examples.CandlesticksCacheExample
-import lestelabs.binanceapi.calculations.Charts
-import lestelabs.binanceapi.calculations.Indicators
+import lestelabs.binanceapi.charts.Charts
+import lestelabs.binanceapi.charts.Indicators
 import java.lang.Exception
-import java.util.*
 import android.widget.AdapterView
 import android.widget.TextView
 
@@ -131,7 +124,7 @@ class MainActivity : AppCompatActivity() {
             yAxis.add(Indicators.rsi(candlesticksClosePrice,20))
             Charts(this).linearChart(findViewById(R.id.graphView2), xAxis, mutableListOf(yAxis[2]), 20)
 
-            textView1.text = "sma: " + yAxis[1][yAxis[1].size-1].toString() + " rsi: " + yAxis[2][yAxis[2].size-1].toString()
+            textView1.text = "endPrice: " + yAxis[0][yAxis[0].size-1].toString() + " sma: " + String.format("%.5f", yAxis[1][yAxis[1].size-1]) + " rsi: " + String.format("%.5f", yAxis[2][yAxis[2].size-1])
 
             //Charts().setBarChart(findViewById(R.id.idBarChart))
         } catch (e:Exception) {
