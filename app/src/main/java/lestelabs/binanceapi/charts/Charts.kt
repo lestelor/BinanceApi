@@ -19,9 +19,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter
-
-
-
+import lestelabs.binanceapi.MainActivity
 
 
 class Charts(context: Context) {
@@ -30,13 +28,37 @@ class Charts(context: Context) {
     private val lineColors:  List<Int> = listOf(Color.BLACK, Color.RED)
     val mContext = context
 
+    fun printLinearGraph(graphView: GraphView, xAxis:List<Long>, yAxis:List<DoubleArray>){
+        var minY:Double
+        var maxY:Double
 
-    fun linearChart(graph: GraphView, xAxis: LongArray, yAxis:DoubleArray, offset: Int, color: Int, dotted:Boolean) {
+        graphView.removeAllSeries()
+        Charts(mContext).linearChart(graphView, xAxis, yAxis[0],
+            MainActivity.OFFSET, Color.BLACK, false)
+
+        if (yAxis.size <= 2) {
+            minY = yAxis[0].minOrNull() ?: 0.0
+            maxY = yAxis[0].maxOrNull() ?: 10.0
+            Charts(mContext).linearChart(graphView, xAxis, yAxis[1],
+                MainActivity.OFFSET, Color.RED, false)
+        } else {
+            minY = 0.0
+            maxY = 100.0
+            Charts(mContext).linearChart(graphView, xAxis, yAxis[1],
+                MainActivity.OFFSET, Color.RED, true)
+            Charts(mContext).linearChart(graphView, xAxis, yAxis[2],
+                MainActivity.OFFSET, Color.RED, true)
+        }
+
+        Charts(mContext).linearChartSettings(graphView,minY,maxY)
+    }
+
+    fun linearChart(graph: GraphView, xAxis: List<Long>, yAxis:DoubleArray, offset: Int, color: Int, dotted:Boolean) {
         val series: LineGraphSeries<DataPoint> = LineGraphSeries()
 
-            for (j in 0+offset .. yAxis.size-1) {
+            for (j in 0 .. yAxis.size-1) {
                 val dataPoint = DataPoint(Date(xAxis[j]),yAxis[j])
-                series.appendData(dataPoint, true,xAxis.size-offset)
+                series.appendData(dataPoint, true,yAxis.size)
             }
             series.color = color
         if (dotted) {
@@ -52,14 +74,17 @@ class Charts(context: Context) {
     }
 
     fun linearChartSettings(graph: GraphView, minY:Double, maxY:Double) {
+
+        // Set Yaxis bound
         graph.gridLabelRenderer.numHorizontalLabels = 10;
         graph.viewport.setMinY(minY*0.8)
         graph.viewport.setMaxY(maxY)
         graph.viewport.isYAxisBoundsManual = true;
-        graph.viewport.isXAxisBoundsManual = true;
+
+
         if (minY == 0.0) {
             graph.gridLabelRenderer.labelFormatter =
-                DateAsXAxisLabelFormatter(mContext, SimpleDateFormat(""))
+                DateAsXAxisLabelFormatter(mContext, SimpleDateFormat("yyyy-MM-dd HH:mm:ss"))
         } else {
             graph.gridLabelRenderer.labelFormatter =
                 DateAsXAxisLabelFormatter(mContext, SimpleDateFormat("yyyy-MM-dd HH:mm:ss"))
@@ -69,62 +94,6 @@ class Charts(context: Context) {
         //if(minY == 0.0) graph.gridLabelRenderer.isHorizontalLabelsVisible = false
     }
 
-
-    fun setBarChart(barChart: BarChart) {
-
-        // variable for our bar data.
-        val barData: BarData
-        // variable for our bar data set.
-        val barDataSet: BarDataSet
-
-        // array list for storing entries.
-
-        // array list for storing entries.
-        val entries = ArrayList<BarEntry>()
-        entries.add(BarEntry(8f, 0f))
-        entries.add(BarEntry(2f, 1f))
-        entries.add(BarEntry(5f, 2f))
-        entries.add(BarEntry(20f, 3f))
-        entries.add(BarEntry(15f, 4f))
-        entries.add(BarEntry(19f, 5f))
-
-        // creating a new bar data set.
-        // creating a new bar data set.
-        barDataSet = BarDataSet(entries, "Geeks for Geeks")
-
-        // creating a new bar data and
-        // passing our bar data set.
-
-        // creating a new bar data and
-        // passing our bar data set.
-        barData = BarData(barDataSet)
-
-        // below line is to set data
-        // to our bar chart.
-
-        // below line is to set data
-        // to our bar chart.
-        barChart.data = barData
-
-        // adding color to our bar data set.
-
-        // adding color to our bar data set.
-        barDataSet.setColors(*ColorTemplate.MATERIAL_COLORS)
-
-        // setting text color.
-
-        // setting text color.
-        barDataSet.valueTextColor = Color.BLACK
-
-        // setting text size
-
-        // setting text size
-        barDataSet.valueTextSize = 16f
-        barChart.description.isEnabled = false
-
-
-        barChart.animateY(5000)
-    }
 
 
 }

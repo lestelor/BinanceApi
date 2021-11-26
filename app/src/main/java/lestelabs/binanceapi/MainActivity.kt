@@ -25,6 +25,8 @@ import lestelabs.binanceapi.charts.Indicators
 import java.lang.Exception
 import android.widget.AdapterView
 import android.widget.TextView
+import com.github.mikephil.charting.components.YAxis
+import lestelabs.binanceapi.binance.Binance
 import lestelabs.binanceapi.tools.Tools
 
 
@@ -33,6 +35,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var spinner:Spinner
     private lateinit var textView1: TextView
+    private val interval = CandlestickInterval.HOURLY
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,6 +59,37 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
+        init_spinner()
+
+        textView1 = findViewById(R.id.textHome)
+    }
+
+
+    fun onSpinnerSelection(symbol: String) {
+
+        val binance = Binance(this)
+        val client = binance.initRestClient()
+        val charts = Charts(this)
+        val account: Account = client.account
+
+        //Log.d(TAG,"binance balances " + account.balances)
+        Log.d(TAG,"binance balance ADA " + account.getAssetBalance("ADA").free)
+        //println(account.balances)
+        //println(account.getAssetBalance("ADA").free)
+
+        //val openOrders = client.getOpenOrders(OrderRequest("ADAEUR"))
+        //Log.d(TAG, "binance open orders $openOrders")
+
+        //val candlesticksCacheExample = CandlesticksCacheExample("ETHBTC", CandlestickInterval.ONE_MINUTE);
+        //Log.d(TAG, "binance candle ADA $candlesticksCacheExample")
+
+        val candleSticks = binance.getCandleSticks(client, symbol, interval)
+        charts.printLinearGraph(findViewById(R.id.graphView1), candleSticks.first,candleSticks.second.first)
+        charts.printLinearGraph(findViewById(R.id.graphView2), candleSticks.first,candleSticks.second.second)
+        updateTextView(textView1, candleSticks.second)
+    }
+
+    fun init_spinner() {
         spinner = findViewById(R.id.spinner1)
         val items = arrayOf("ADAEUR", "BTCEUR", "ETHEUR", "DOGEEUR")
         //create an adapter to describe how the items are displayed, adapters are used in several places in android.
@@ -70,98 +104,26 @@ class MainActivity : AppCompatActivity() {
                 position: Int,
                 id: Long
             ) {
-                init_binance(items[position])
+                onSpinnerSelection(items[position])
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
                 // vacio
             }
         }
-
-        textView1 = findViewById(R.id.textHome)
     }
 
+    fun updateTextView(textView: TextView, input: Pair<List<DoubleArray>, List<DoubleArray>>) {
+        val value = input.first[0]
+        val sma = input.first[1]
+        val rsi = input.second[0]
 
-    fun init_binance(symbol: String) {
-        val factory = BinanceApiClientFactory.newInstance("O6TtsJzwkJr2QsecVQZQNcM1KWjMKeSe6YqIFBCupGEDdP5OrwUDbQJJ3bQPDssO", "clZG1nQ5FDIcLuK0KsspwFUTzlg56Gsw6F4maYrxO8yJDcfxVUndHQfF5mPtfTBq")
-        val client = factory.newRestClient()
-
-        val account: Account = client.account
-        //Log.d(TAG,"binance balances " + account.balances)
-        Log.d(TAG,"binance balance ADA " + account.getAssetBalance("ADA").free)
-        //println(account.balances)
-        //println(account.getAssetBalance("ADA").free)
-
-        //val openOrders = client.getOpenOrders(OrderRequest("ADAEUR"))
-        //Log.d(TAG, "binance open orders $openOrders")
-
-        //val candlesticksCacheExample = CandlesticksCacheExample("ETHBTC", CandlestickInterval.ONE_MINUTE);
-        //Log.d(TAG, "binance candle ADA $candlesticksCacheExample")
-
-
-        val interval = CandlestickInterval.HOURLY
-
-
-        try {
-            //val candleStickBars = DoubleArray(500)
-            val candleStickBars = client.getCandlestickBars(symbol.toUpperCase(), interval)
-
-            val candlesticksClosePrice= DoubleArray(candleStickBars.size)
-            val rsiMin = DoubleArray(candleStickBars.size)
-            val rsiMax = DoubleArray(candleStickBars.size)
-            val candlesticksDate= LongArray(candleStickBars.size)
-
-            for (i in 0 .. candleStickBars.size-1) {
-                candlesticksClosePrice[i] = candleStickBars[i].eClose.toDouble()
-                candlesticksDate[i] = candleStickBars[i].gCloseTime
-                rsiMin[i] = 30.0
-                rsiMax[i] = 70.0
-                //candlesticksClosePrice[i] = i.toDouble()
-                //candlesticksDate[i] = i.toDouble()
-            }
-
-
-            val xAxis: LongArray = candlesticksDate
-            val yAxis: MutableList<DoubleArray> = mutableListOf()
-            yAxis.add(candlesticksClosePrice)
-            yAxis.add (Indicators.movingAverage(candlesticksClosePrice,20))
-            Charts(this).linearChart(findViewById(R.id.graphView1), xAxis, yAxis[0], 20, Color.BLACK, false)
-            Charts(this).linearChart(findViewById(R.id.graphView1), xAxis, yAxis[1], 20, Color.RED, false)
-
-            val minY = Tools().findMin(yAxis[0], 20)
-            val maxY = Tools().findMax(yAxis[0], 20)
-            Charts(this).linearChartSettings(findViewById(R.id.graphView1),minY,maxY)
-
-            yAxis.add(Indicators.rsi(candlesticksClosePrice,20))
-            yAxis.add(rsiMin)
-            yAxis.add(rsiMax)
-            Charts(this).linearChart(findViewById(R.id.graphView2), xAxis, yAxis[2], 20, Color.BLACK, false)
-            Charts(this).linearChart(findViewById(R.id.graphView2), xAxis, yAxis[3], 20, Color.RED, true)
-            Charts(this).linearChart(findViewById(R.id.graphView2), xAxis, yAxis[4], 20, Color.RED, true)
-            Charts(this).linearChartSettings(findViewById(R.id.graphView2),0.0,100.0)
-
-            textView1.text = "endPrice: " + yAxis[0][yAxis[0].size-1].toString() + " sma: " + String.format("%.5f", yAxis[1][yAxis[1].size-1]) + " rsi: " + String.format("%.5f", yAxis[2][yAxis[2].size-1])
-
-            //Charts().setBarChart(findViewById(R.id.idBarChart))
-        } catch (e:Exception) {
-            Log.d(TAG, "binance candlestick error $e")
-        }
-
-
-        //Log.d(TAG, "binance candle ADA " + candlestickBars[0])
-/*        val candlesticksCache = TreeMap<Long, Candlestick>()
-        for (candlestickBar in candlestickBars) {
-            candlesticksCache[candlestickBar.aOpenTime] = candlestickBar
-        }*/
-
-
-
-
-
+         textView.text = "endPrice: " + value[value.size-1].toString() + " sma: " + String.format("%.5f", sma[sma.size-1]) + " rsi: " + String.format("%.5f", rsi[rsi.size-1])
     }
 
     companion object {
         const val TAG = "MainActivity"
+        const val OFFSET = 50
     }
 
 
