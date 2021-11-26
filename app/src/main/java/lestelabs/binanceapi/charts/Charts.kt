@@ -83,8 +83,8 @@ class Charts(context: Context) {
 
 
         if (minY == 0.0) {
-            graph.gridLabelRenderer.labelFormatter =
-                DateAsXAxisLabelFormatter(mContext, SimpleDateFormat("yyyy-MM-dd HH:mm:ss"))
+/*            graph.gridLabelRenderer.labelFormatter =
+                DateAsXAxisLabelFormatter(mContext, SimpleDateFormat(""))*/
         } else {
             graph.gridLabelRenderer.labelFormatter =
                 DateAsXAxisLabelFormatter(mContext, SimpleDateFormat("yyyy-MM-dd HH:mm:ss"))
