@@ -1,10 +1,9 @@
-package lestelabs.binanceapi.calculations
+package lestelabs.binanceapi.charts
 
 import com.tictactec.ta.lib.Core
 import com.tictactec.ta.lib.MInteger
 import com.tictactec.ta.lib.RetCode
 import java.lang.StringBuilder
-import kotlin.math.absoluteValue
 
 
 object Indicators {

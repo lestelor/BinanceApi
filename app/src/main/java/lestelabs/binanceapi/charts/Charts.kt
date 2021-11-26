@@ -1,26 +1,22 @@
-package lestelabs.binanceapi.calculations
+package lestelabs.binanceapi.charts
 
 
 import android.content.Context
 import android.graphics.Color
-import android.util.Log
+import android.graphics.DashPathEffect
+import android.graphics.Paint
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.utils.ColorTemplate
-import com.jjoe64.graphview.DefaultLabelFormatter
 import com.jjoe64.graphview.GraphView
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
-import lestelabs.binanceapi.R
 import lestelabs.binanceapi.tools.Tools
-import java.text.Format
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.math.min
-import lestelabs.binanceapi.MainActivity
 
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter
 
@@ -35,41 +31,43 @@ class Charts(context: Context) {
     val mContext = context
 
 
-    fun linearChart(graph: GraphView, xAxis: LongArray, yAxis:MutableList<DoubleArray>, offset: Int) {
+    fun linearChart(graph: GraphView, xAxis: LongArray, yAxis:DoubleArray, offset: Int, color: Int, dotted:Boolean) {
+        val series: LineGraphSeries<DataPoint> = LineGraphSeries()
 
-        var minY = 50000.0
-        var maxY = 0.0
-        val series: MutableList<LineGraphSeries<DataPoint>> = mutableListOf()
-
-
-
-        for (i in yAxis.indices) {
-            series.add(LineGraphSeries<DataPoint>())
-            for (j in 0+offset .. yAxis[i].size-1) {
-                val dataPoint = DataPoint(Date(xAxis[j]),yAxis[i][j])
-                series[i].appendData(dataPoint, true,xAxis.size-offset)
+            for (j in 0+offset .. yAxis.size-1) {
+                val dataPoint = DataPoint(Date(xAxis[j]),yAxis[j])
+                series.appendData(dataPoint, true,xAxis.size-offset)
             }
-
-            minY = Tools().findMin(yAxis[i], offset, minY)
-            maxY = Tools().findMax(yAxis[i], offset, maxY)
-
-            series[i].color = lineColors[i]
-            graph.addSeries(series[i])
+            series.color = color
+        if (dotted) {
+            val paint: Paint = Paint();
+            paint.style = Paint.Style.STROKE;
+            paint.strokeWidth = 5f;
+            paint.pathEffect = DashPathEffect(floatArrayOf(0.008f, 0.005f), 0F)
+            paint.color = color
+            series.isDrawAsPath = true
+            series.setCustomPaint(paint)
         }
-
-        graph.viewport.setMinY(minY*0.8)
-        graph.viewport.setMaxY(maxY*1.2)
-
-
-        graph.viewport.isYAxisBoundsManual = true;
-        graph.viewport.isXAxisBoundsManual = true;
-
-        graph.gridLabelRenderer.labelFormatter =
-            DateAsXAxisLabelFormatter(mContext, SimpleDateFormat("yyyy-MM-dd HH:mm:ss"))
-        graph.gridLabelRenderer.numHorizontalLabels = 5;
-        graph.gridLabelRenderer.setHorizontalLabelsAngle(90);
+            graph.addSeries(series)
     }
 
+    fun linearChartSettings(graph: GraphView, minY:Double, maxY:Double) {
+        graph.gridLabelRenderer.numHorizontalLabels = 10;
+        graph.viewport.setMinY(minY*0.8)
+        graph.viewport.setMaxY(maxY)
+        graph.viewport.isYAxisBoundsManual = true;
+        graph.viewport.isXAxisBoundsManual = true;
+        if (minY == 0.0) {
+            graph.gridLabelRenderer.labelFormatter =
+                DateAsXAxisLabelFormatter(mContext, SimpleDateFormat(""))
+        } else {
+            graph.gridLabelRenderer.labelFormatter =
+                DateAsXAxisLabelFormatter(mContext, SimpleDateFormat("yyyy-MM-dd HH:mm:ss"))
+        }
+        graph.gridLabelRenderer.numVerticalLabels = 5
+        graph.gridLabelRenderer.setHorizontalLabelsAngle(90);
+        //if(minY == 0.0) graph.gridLabelRenderer.isHorizontalLabelsVisible = false
+    }
 
 
     fun setBarChart(barChart: BarChart) {
