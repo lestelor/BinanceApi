@@ -1,61 +1,51 @@
 package lestelabs.binanceapi.charts
 
+import android.util.Log
 import com.tictactec.ta.lib.Core
 import com.tictactec.ta.lib.MInteger
 import com.tictactec.ta.lib.RetCode
+import lestelabs.binanceapi.tools.Tools
 import java.lang.StringBuilder
 
 
 object Indicators {
     val core = Core()
+    val TAB = "Indicators"
 
 
-    fun rsi(prices: DoubleArray, period: Int): DoubleArray {
-        val output = DoubleArray(prices.size)
-        val tempOutPut = DoubleArray(prices.size)
+    fun rsi(input: DoubleArray, period: Int): DoubleArray {
+        val out = DoubleArray(input.size)
         val begin = MInteger()
         val length = MInteger()
         var retCode = RetCode.InternalError
         begin.value = -1
         length.value = -1
-        retCode = core.rsi(0, prices.size - 1, prices, period, begin, length, tempOutPut)
-        for (i in 0 until period) {
-            output[i] = 0.0
+        retCode = core.rsi(0, input.size - 1, input, period, begin, length, out)
+
+        return if (retCode == RetCode.Success) {
+            out.dropLast(period).toDoubleArray()
+        } else {
+            Log.d(TAB, "TALIB Error rsi $retCode")
+            doubleArrayOf()
         }
-        var i = period
-        while (0 < i && i < prices.size) {
-            output[i] = tempOutPut[i - period]
-            i++
-        }
-        return output
     }
 
 
-    fun movingAverage(closePrice: DoubleArray, periodsAverage:Int): DoubleArray {
+    fun movingAverage(input: DoubleArray, period:Int): DoubleArray {
         // begin: Where to start to calculate the average, i.e. out[0] = sma(closePrice[begin]),
        // begin+lenght: Last calculated average out[begin+lenght]
         val begin = MInteger()
         val length = MInteger()
-        val out = DoubleArray(closePrice.size)
-        val outCorrect = DoubleArray(closePrice.size)
-        val retCode = core.sma(0, closePrice.size-1, closePrice, periodsAverage, begin, length, out)
-        if (retCode == RetCode.Success) {
-            println("Output Start Period: " + begin.value)
-            println("Output End Period: " + (begin.value + length.value - 1))
-            for (i in begin.value until begin.value + length.value ) {
-                val line = StringBuilder()
-                line.append("Period #")
-                line.append(i)
-                line.append(" close=")
-                line.append(closePrice[i])
-                line.append(" mov_avg=")
-                line.append(out[i - begin.value])
-                println(line.toString())
-                outCorrect[i] = out[i - begin.value]
-            }
+        val out = DoubleArray(input.size)
+        var output = DoubleArray(input.size-period)
+        val retCode = core.sma(0, input.size-1, input, period, begin, length, out)
+        return if (retCode == RetCode.Success) {
+            out.dropLast(period).toDoubleArray()
         } else {
-            println("TALIB Error")
+            Log.d(TAB, "TALIB Error rsi $retCode")
+            doubleArrayOf()
         }
-        return outCorrect
     }
+
+
 }
