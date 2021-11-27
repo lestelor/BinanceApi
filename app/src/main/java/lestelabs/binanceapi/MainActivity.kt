@@ -26,6 +26,18 @@ import java.lang.Exception
 import android.widget.AdapterView
 import android.widget.TextView
 import lestelabs.binanceapi.tools.Tools
+import lestelabs.binanceapi.binance.api.client.BinanceApiWebSocketClient
+import lestelabs.binanceapi.binance.api.client.domain.event.AggTradeEvent
+
+import lestelabs.binanceapi.binance.api.client.BinanceApiCallback
+
+
+
+
+
+
+
+
 
 
 class MainActivity : AppCompatActivity() {
@@ -85,6 +97,18 @@ class MainActivity : AppCompatActivity() {
     fun init_binance(symbol: String) {
         val factory = BinanceApiClientFactory.newInstance("O6TtsJzwkJr2QsecVQZQNcM1KWjMKeSe6YqIFBCupGEDdP5OrwUDbQJJ3bQPDssO", "clZG1nQ5FDIcLuK0KsspwFUTzlg56Gsw6F4maYrxO8yJDcfxVUndHQfF5mPtfTBq")
         val client = factory.newRestClient()
+
+        val client2 = factory.newWebSocketClient()
+        client2.onAggTradeEvent(symbol.toLowerCase(), object : BinanceApiCallback<AggTradeEvent?> {
+            override fun onFailure(cause: Throwable) {
+                System.err.println("Web socket failed")
+                cause.printStackTrace(System.err)
+            }
+
+            override fun onResponse(response: AggTradeEvent?) {
+                Log.d(TAG, "binance websocket aggTradeEvent $response")
+            }
+        })
 
         val account: Account = client.account
         //Log.d(TAG,"binance balances " + account.balances)
