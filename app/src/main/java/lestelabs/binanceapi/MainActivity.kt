@@ -38,18 +38,19 @@ import lestelabs.binanceapi.databinding.ActivityMainBinding
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private lateinit var spinner:Spinner
-    private lateinit var textView1: TextView
-    private val interval = CandlestickInterval.HOURLY
-    private lateinit var binance: Binance
-    private lateinit var restClient: BinanceApiRestClient
-    private lateinit var webSocketClient: BinanceApiWebSocketClient
+
+
     // declaring variables
     lateinit var notificationManager: NotificationManager
     lateinit var notificationChannel: NotificationChannel
     lateinit var builder: Notification.Builder
     private val channelId = "i.apps.notifications"
     private val description = "Test notification"
+
+
+    private lateinit var binance: Binance
+    private lateinit var restClient: BinanceApiRestClient
+    private lateinit var webSocketClient: BinanceApiWebSocketClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,12 +75,13 @@ class MainActivity : AppCompatActivity() {
         navView.setupWithNavController(navController)
 
 
+
         init_binance()
         init_notification()
-        init_spinner()
         init_listener_user_binance_updates()
-        textView1 = findViewById(R.id.textHome)
+
     }
+
 
     fun init_binance() {
         binance = Binance(this)
@@ -92,61 +94,7 @@ class MainActivity : AppCompatActivity() {
         notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     }
 
-    fun onSpinnerSelection(symbol: String) {
 
-
-
-        val charts = Charts(this)
-        val account: Account = restClient.account
-
-        //Log.d(TAG,"binance balances " + account.balances)
-        Log.d(TAG,"binance balance ADA " + account.getAssetBalance("ADA").free)
-        //println(account.balances)
-        //println(account.getAssetBalance("ADA").free)
-
-        //val openOrders = client.getOpenOrders(OrderRequest("ADAEUR"))
-        //Log.d(TAG, "binance open orders $openOrders")
-
-        //val candlesticksCacheExample = CandlesticksCacheExample("ETHBTC", CandlestickInterval.ONE_MINUTE);
-        //Log.d(TAG, "binance candle ADA $candlesticksCacheExample")
-
-        val candleSticks = binance.getCandleSticks(restClient, symbol, interval)
-        charts.printLinearGraph(findViewById(R.id.graphView1), candleSticks.first,candleSticks.second.first)
-        charts.printLinearGraph(findViewById(R.id.graphView2), candleSticks.first,candleSticks.second.second)
-        updateTextView(textView1, candleSticks.second)
-    }
-
-    fun init_spinner() {
-        spinner = findViewById(R.id.spinner1)
-        val items = arrayOf("ADAEUR", "BTCEUR", "ETHEUR", "DOGEEUR")
-        //create an adapter to describe how the items are displayed, adapters are used in several places in android.
-        //There are multiple variations of this, but this is the basic variant.
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, items)
-        //set the spinners adapter to the previously created one.
-        spinner.adapter = adapter
-        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                adapterView: AdapterView<*>,
-                view: View,
-                position: Int,
-                id: Long
-            ) {
-                onSpinnerSelection(items[position])
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                // vacio
-            }
-        }
-    }
-
-    fun updateTextView(textView: TextView, input: Pair<List<DoubleArray>, List<DoubleArray>>) {
-        val value = input.first[0]
-        val sma = input.first[1]
-        val rsi = input.second[0]
-
-        textView.text = "endPrice: " + value[value.size-1].toString() + " sma: " + String.format("%.5f", sma[sma.size-1]) + " rsi: " + String.format("%.5f", rsi[rsi.size-1])
-    }
 
 
     fun init_listener_user_binance_updates() {
@@ -191,7 +139,6 @@ class MainActivity : AppCompatActivity() {
                 System.err.println("Web socket failed")
                 cause.printStackTrace(System.err)
             }
-
             override fun onResponse(response: AggTradeEvent?) {
             Log.d(TAG, "binance websocket aggtradeevents $response")
             }
@@ -231,14 +178,14 @@ class MainActivity : AppCompatActivity() {
                 //.setContent(contentView)
                 .setSmallIcon(R.drawable.ic_launcher_background)
                 .setLargeIcon(BitmapFactory.decodeResource(this.resources, R.drawable.ic_launcher_background))
-                //.setContentIntent(pendingIntent)
+            //.setContentIntent(pendingIntent)
         } else {
 
             builder = Notification.Builder(this)
                 //.setContent(contentView)
                 .setSmallIcon(R.drawable.ic_launcher_background)
                 .setLargeIcon(BitmapFactory.decodeResource(this.resources, R.drawable.ic_launcher_background))
-                //.setContentIntent(pendingIntent)
+            //.setContentIntent(pendingIntent)
         }
         notificationManager.notify(1234, builder.build())
     }

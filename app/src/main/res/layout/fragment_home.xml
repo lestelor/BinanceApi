@@ -8,45 +8,18 @@
 
 
 
-<ScrollView
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    app:layout_constraintBottom_toTopOf="parent">
-
-        <LinearLayout
+    <TextView
+            android:id="@+id/text_home"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <Spinner
-                android:id="@+id/spinner1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@android:drawable/btn_dropdown"
-                android:spinnerMode="dropdown"/>
-
-            <TextView
-                android:id="@+id/textHome"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"/>
-
-            <!--                <com.github.mikephil.charting.charts.BarChart
-                    android:id="@+id/idBarChart"
-                    android:layout_width="match_parent"
-                    android:layout_height="400dp" />-->
-
-
-                <com.jjoe64.graphview.GraphView
-                    android:id="@+id/graphView1"
-                    android:layout_width="match_parent"
-                    android:layout_height="500dp" />
-                <com.jjoe64.graphview.GraphView
-                    android:id="@+id/graphView2"
-                    android:layout_width="match_parent"
-                    android:layout_height="500dp" />
-        </LinearLayout>
-</ScrollView>
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
