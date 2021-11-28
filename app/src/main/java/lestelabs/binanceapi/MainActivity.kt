@@ -9,9 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.Color
-import android.os.Build
-import android.os.Bundle
-import android.os.StrictMode
+import android.os.*
 import android.os.StrictMode.ThreadPolicy
 import android.util.Log
 import android.view.View
@@ -35,7 +33,12 @@ import lestelabs.binanceapi.charts.Charts
 import lestelabs.binanceapi.databinding.ActivityMainBinding
 
 
-class MainActivity : AppCompatActivity() {
+interface RetrieveDataInterface {
+    fun retrieveDataInterface():Binance
+}
+
+
+class MainActivity : AppCompatActivity(), RetrieveDataInterface {
 
     private lateinit var binding: ActivityMainBinding
 
@@ -49,8 +52,9 @@ class MainActivity : AppCompatActivity() {
 
 
     private lateinit var binance: Binance
-    private lateinit var restClient: BinanceApiRestClient
-    private lateinit var webSocketClient: BinanceApiWebSocketClient
+    lateinit var mainHandler: Handler
+    lateinit var binanceKeepAlive: Runnable
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,7 +79,8 @@ class MainActivity : AppCompatActivity() {
         navView.setupWithNavController(navController)
 
 
-
+        val tvNotification = findViewById<TextView>(R.id.tvNotification)
+        mainHandler = Handler(Looper.getMainLooper())
         init_binance()
         init_notification()
         init_listener_user_binance_updates()
@@ -84,10 +89,7 @@ class MainActivity : AppCompatActivity() {
 
 
     fun init_binance() {
-        binance = Binance(this)
-        restClient = binance.initRestClient()
-        val factory = BinanceApiClientFactory.newInstance("O6TtsJzwkJr2QsecVQZQNcM1KWjMKeSe6YqIFBCupGEDdP5OrwUDbQJJ3bQPDssO", "clZG1nQ5FDIcLuK0KsspwFUTzlg56Gsw6F4maYrxO8yJDcfxVUndHQfF5mPtfTBq")
-        webSocketClient = factory.newWebSocketClient()
+        binance = Binance()
     }
 
     fun init_notification() {
@@ -95,16 +97,14 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
-
     fun init_listener_user_binance_updates() {
 
         // First, we obtain a listenKey which is required to interact with the user data stream
 
         // First, we obtain a listenKey which is required to interact with the user data stream
-        val listenKey = restClient.startUserDataStream()
+        val listenKey = binance.restClient.startUserDataStream()
 
-        webSocketClient.onUserDataUpdateEvent(listenKey) { response ->
+        binance.webSocketClient.onUserDataUpdateEvent(listenKey) { response ->
             if (response.eventType === UserDataUpdateEvent.UserDataUpdateEventType.ACCOUNT_POSITION_UPDATE) {
                 val accountUpdateEvent: AccountUpdateEvent = response.outboundAccountPositionUpdateEvent
 
@@ -128,6 +128,13 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        binanceKeepAlive = object : Runnable {
+            override fun run() {
+                binance.restClient.keepAliveUserDataStream(listenKey);
+                mainHandler.postDelayed(this, 1000*15)
+                Log.d(TAG, "binance keep alive")
+            }
+        }
 
         // call every 15min
         //client.keepAliveUserDataStream(listenKey);
@@ -164,7 +171,8 @@ class MainActivity : AppCompatActivity() {
 
         // RemoteViews are used to use the content of
         // some different layout apart from the current activity layout
-        //val contentView = RemoteViews(packageName, R.layout.activity_after_notification)
+        val contentView = RemoteViews(packageName, R.layout.activity_after_notification)
+        contentView.setTextViewText(R.id.tvNotification, "cadcsddrgethrthrtr")
 
         // checking if android version is greater than oreo(API 26) or not
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -174,24 +182,42 @@ class MainActivity : AppCompatActivity() {
             notificationChannel.enableVibration(false)
             notificationManager.createNotificationChannel(notificationChannel)
 
+
+
             builder = Notification.Builder(this, channelId)
-                //.setContent(contentView)
+                .setContent(contentView)
                 .setSmallIcon(R.drawable.ic_launcher_background)
                 .setLargeIcon(BitmapFactory.decodeResource(this.resources, R.drawable.ic_launcher_background))
             //.setContentIntent(pendingIntent)
         } else {
 
             builder = Notification.Builder(this)
-                //.setContent(contentView)
+                .setContent(contentView)
                 .setSmallIcon(R.drawable.ic_launcher_background)
                 .setLargeIcon(BitmapFactory.decodeResource(this.resources, R.drawable.ic_launcher_background))
             //.setContentIntent(pendingIntent)
         }
         notificationManager.notify(1234, builder.build())
+
     }
+
+
+    override fun onPause() {
+        super.onPause()
+        mainHandler.removeCallbacks(binanceKeepAlive)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mainHandler.post(binanceKeepAlive)
+    }
+
     companion object {
         const val TAG = "MainActivity"
-        const val OFFSET = 50
+    }
+
+    override fun retrieveDataInterface(): Binance {
+        return binance
     }
 
 

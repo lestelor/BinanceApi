@@ -16,6 +16,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import lestelabs.binanceapi.MainActivity
 import lestelabs.binanceapi.R
+import lestelabs.binanceapi.RetrieveDataInterface
 import lestelabs.binanceapi.binance.Binance
 import lestelabs.binanceapi.binance.api.client.BinanceApiClientFactory
 import lestelabs.binanceapi.binance.api.client.BinanceApiRestClient
@@ -34,12 +35,10 @@ class DashboardFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
-    private lateinit var factory: BinanceApiClientFactory
-    private lateinit var restClient: BinanceApiRestClient
-    private lateinit var webSocketClient: BinanceApiWebSocketClient
-    private lateinit var textDashboard: TextView
+
     private lateinit var spinner: Spinner
-    private val interval = CandlestickInterval.HOURLY
+    private var binance: Binance? = null
+    private var listener: RetrieveDataInterface? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -61,29 +60,23 @@ class DashboardFragment : Fragment() {
         init_binance()
         init_spinner()
 
-
         return root
     }
 
 
     fun init_binance() {
-        //binance = Binance(requireActivity())
-        //restClient = binance.initRestClient()
+        binance = listener?.retrieveDataInterface()
 
-        val factory = BinanceApiClientFactory.newInstance("O6TtsJzwkJr2QsecVQZQNcM1KWjMKeSe6YqIFBCupGEDdP5OrwUDbQJJ3bQPDssO", "clZG1nQ5FDIcLuK0KsspwFUTzlg56Gsw6F4maYrxO8yJDcfxVUndHQfF5mPtfTBq")
-        restClient = factory.newRestClient()
-
-        //val factory = BinanceApiClientFactory.newInstance("O6TtsJzwkJr2QsecVQZQNcM1KWjMKeSe6YqIFBCupGEDdP5OrwUDbQJJ3bQPDssO", "clZG1nQ5FDIcLuK0KsspwFUTzlg56Gsw6F4maYrxO8yJDcfxVUndHQfF5mPtfTBq")
-        webSocketClient = factory.newWebSocketClient()
     }
 
     fun init_spinner() {
         spinner = binding.spinner1
+        val sticks: Array<String> = binance?.sticks?: arrayOf()
 
-        val items = arrayOf("ADAEUR", "BTCEUR", "ETHEUR", "DOGEEUR")
         //create an adapter to describe how the items are displayed, adapters are used in several places in android.
         //There are multiple variations of this, but this is the basic variant.
-        val adapter = ArrayAdapter(requireActivity(), android.R.layout.simple_spinner_dropdown_item, items)
+
+        val adapter = ArrayAdapter(requireActivity(), android.R.layout.simple_spinner_dropdown_item, sticks)
         //set the spinners adapter to the previously created one.
         spinner.adapter = adapter
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -93,7 +86,7 @@ class DashboardFragment : Fragment() {
                 position: Int,
                 id: Long
             ) {
-                onSpinnerSelection(items[position])
+                onSpinnerSelection(sticks[position])
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -120,10 +113,20 @@ class DashboardFragment : Fragment() {
         //val candlesticksCacheExample = CandlesticksCacheExample("ETHBTC", CandlestickInterval.ONE_MINUTE);
         //Log.d(TAG, "binance candle ADA $candlesticksCacheExample")
 
-        val candleSticks = Binance(requireContext()).getCandleSticks(restClient, symbol, interval)
-        charts.printLinearGraph(binding.graphView1, candleSticks.first,candleSticks.second.first)
-        charts.printLinearGraph(binding.graphView2, candleSticks.first,candleSticks.second.second)
-        updateTextView(binding.textDashboard, candleSticks.second)
+        val candleSticks = binance?.restClient?.let { binance?.interval?.let { it1 ->
+            Binance().getCandleSticks(it, symbol,
+                it1
+            )
+        } }
+        candleSticks?.first?.let {
+            charts.printLinearGraph(binding.graphView1,
+                it,candleSticks.second.first)
+        }
+        candleSticks?.first?.let {
+            charts.printLinearGraph(binding.graphView2,
+                it,candleSticks.second.second)
+        }
+        candleSticks?.second?.let { updateTextView(binding.textDashboard, it) }
     }
 
 
@@ -140,5 +143,21 @@ class DashboardFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        try {
+            listener = activity as RetrieveDataInterface
+            // listener.showFormula(show?);
+        } catch (castException: ClassCastException) {
+            /** The activity does not implement the listener.  */
+        }
+
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        listener = null
     }
 }

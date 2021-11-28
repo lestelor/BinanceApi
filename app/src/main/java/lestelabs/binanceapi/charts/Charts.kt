@@ -20,6 +20,7 @@ import kotlin.collections.ArrayList
 
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter
 import lestelabs.binanceapi.MainActivity
+import lestelabs.binanceapi.binance.Binance
 
 
 class Charts(context: Context) {
@@ -34,20 +35,20 @@ class Charts(context: Context) {
 
         graphView.removeAllSeries()
         Charts(mContext).linearChart(graphView, xAxis, yAxis[0],
-            MainActivity.OFFSET, Color.BLACK, false)
+            Binance().offset, Color.BLACK, false)
 
         if (yAxis.size <= 2) {
             minY = yAxis[0].minOrNull() ?: 0.0
             maxY = yAxis[0].maxOrNull() ?: 10.0
             Charts(mContext).linearChart(graphView, xAxis, yAxis[1],
-                MainActivity.OFFSET, Color.RED, false)
+                Binance().offset, Color.RED, false)
         } else {
             minY = 0.0
             maxY = 100.0
             Charts(mContext).linearChart(graphView, xAxis, yAxis[1],
-                MainActivity.OFFSET, Color.RED, true)
+                Binance().offset, Color.RED, true)
             Charts(mContext).linearChart(graphView, xAxis, yAxis[2],
-                MainActivity.OFFSET, Color.RED, true)
+                Binance().offset, Color.RED, true)
         }
 
         Charts(mContext).linearChartSettings(graphView,minY,maxY)
@@ -83,8 +84,8 @@ class Charts(context: Context) {
 
 
         if (minY == 0.0) {
-/*            graph.gridLabelRenderer.labelFormatter =
-                DateAsXAxisLabelFormatter(mContext, SimpleDateFormat(""))*/
+            graph.gridLabelRenderer.labelFormatter =
+                DateAsXAxisLabelFormatter(mContext, SimpleDateFormat(""))
         } else {
             graph.gridLabelRenderer.labelFormatter =
                 DateAsXAxisLabelFormatter(mContext, SimpleDateFormat("yyyy-MM-dd HH:mm:ss"))
