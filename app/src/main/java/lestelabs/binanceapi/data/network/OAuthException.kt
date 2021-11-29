@@ -1,4 +1,4 @@
-package edu.uoc.pac4.data.network
+package lestelabs.binanceapi.data.network
 
 /**
  * Created by alex on 24/10/2020.

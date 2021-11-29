@@ -1,4 +1,4 @@
-package edu.uoc.pac4.data.streams.model
+package lestelabs.binanceapi.data.streams.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -31,3 +31,4 @@ data class StreamsResponse(
 data class Pagination(
     @SerialName("cursor") val cursor: String? = null,
 )
+

@@ -4,10 +4,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import lestelabs.binanceapi.data.streams.model.
+import lestelabs.binanceapi.data.streams.StreamsRepository
+import lestelabs.binanceapi.data.streams.model.Stream
 import kotlinx.coroutines.launch
+import lestelabs.binanceapi.binance.Binance
+import lestelabs.binanceapi.binance.api.client.domain.market.Candlestick
+import lestelabs.binanceapi.data.network.UnauthorizedException
+import lestelabs.binanceapi.data.streams.datasource.StreamsRemoteDataSource
+import org.apache.commons.lang3.mutable.Mutable
 
-class HomeViewModel(private val repository: StreamsRepository) : ViewModel() {
+class HomeViewModel : ViewModel() {
 
     private val _text = MutableLiveData<String>().apply {
         value = "This is home Fragment"
@@ -15,7 +21,7 @@ class HomeViewModel(private val repository: StreamsRepository) : ViewModel() {
     val text: LiveData<String> = _text
 
     // Observables
-    val streams = MutableLiveData<List<Stream>>(emptyList())
+    val streams = Pair(MutableLiveData<String>(), MutableLiveData<MutableList<Candlestick>?>())
     val isLoading = MutableLiveData<Boolean>(false)
     val isLoggedOut = MutableLiveData<Boolean>(false)
 
@@ -28,18 +34,17 @@ class HomeViewModel(private val repository: StreamsRepository) : ViewModel() {
             isLoading.postValue(true)
             // Get Streams
             try {
-                val streamsResult = repository.getStreams(cursor = if (refresh) null else cursor)
-                // Store cursor
-                cursor = streamsResult.first
+                val streamsResult = Pair("ADAEUR", StreamsRemoteDataSource(
+                    Binance()).getStreams("ADAEUR"))
                 // Set Streams Value
                 if (refresh) {
                     // Set new list
-                    streams.postValue(streamsResult.second!!)
+                    streams.first.postValue(streamsResult.first)
+                    streams.second.postValue(streamsResult.second)
                 } else {
                     // Append to current list
-                    val currentStreams = streams.value.orEmpty()
-                    val totalStreams = currentStreams.plus(streamsResult.second)
-                    streams.postValue(totalStreams)
+/*                    val totalStreams = mutableListOf(streams.value).add(streamsResult)
+                    streams.postValue(totalStreams)*/
                 }
             } catch (e: UnauthorizedException) {
                 isLoggedOut.postValue(true)
@@ -51,6 +56,5 @@ class HomeViewModel(private val repository: StreamsRepository) : ViewModel() {
 
     /// Expose if more streams are available for pagination listener
     fun areMoreStreamsAvailable(): Boolean = cursor != null
-
 
 }

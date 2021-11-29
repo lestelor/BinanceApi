@@ -7,6 +7,7 @@ import android.widget.TextView
 import com.jjoe64.graphview.GraphView
 import lestelabs.binanceapi.MainActivity
 import lestelabs.binanceapi.R
+import lestelabs.binanceapi.binance.api.client.BinanceApiAsyncRestClient
 import lestelabs.binanceapi.binance.api.client.BinanceApiClientFactory
 import lestelabs.binanceapi.binance.api.client.BinanceApiRestClient
 import lestelabs.binanceapi.binance.api.client.BinanceApiWebSocketClient
@@ -18,25 +19,31 @@ import java.lang.Exception
 class Binance() {
 
     val factory: BinanceApiClientFactory = initFactory()
-    val restClient: BinanceApiRestClient = initRestClient(factory)
+    val syncClient: BinanceApiRestClient = initRestClient(factory)
+    val asyncClient: BinanceApiAsyncRestClient = initAsyncClient(factory)
     val webSocketClient: BinanceApiWebSocketClient = initWebSocketClient()
     val offset = 50
     val sticks = arrayOf("ADAEUR", "BTCEUR", "ETHEUR", "DOGEEUR")
     val interval = CandlestickInterval.HOURLY
 
 
-    fun initFactory(): BinanceApiClientFactory {
+    private fun initFactory(): BinanceApiClientFactory {
         return BinanceApiClientFactory.newInstance("O6TtsJzwkJr2QsecVQZQNcM1KWjMKeSe6YqIFBCupGEDdP5OrwUDbQJJ3bQPDssO", "clZG1nQ5FDIcLuK0KsspwFUTzlg56Gsw6F4maYrxO8yJDcfxVUndHQfF5mPtfTBq")
     }
-    fun initRestClient(factory: BinanceApiClientFactory):BinanceApiRestClient {
+    private fun initRestClient(factory: BinanceApiClientFactory):BinanceApiRestClient {
         return factory.newRestClient()
     }
-    fun initWebSocketClient(): BinanceApiWebSocketClient {
+    private fun initAsyncClient(factory: BinanceApiClientFactory): BinanceApiAsyncRestClient {
+        return factory.newAsyncRestClient()
+    }
+    private fun initWebSocketClient(): BinanceApiWebSocketClient {
         return factory.newWebSocketClient()
     }
 
-    fun getCandleSticks(client:BinanceApiRestClient, symbol:String, interval:CandlestickInterval): Pair<List<Long>,Pair<MutableList<DoubleArray>, MutableList<DoubleArray>>> {
+
+    fun getCandleSticksSync(symbol:String): Pair<List<Long>,Pair<MutableList<DoubleArray>, MutableList<DoubleArray>>> {
         try {
+            val client = syncClient
             //val candleStickBars = DoubleArray(500)
             val candleStickBars = client.getCandlestickBars(symbol.toUpperCase(), interval)
 

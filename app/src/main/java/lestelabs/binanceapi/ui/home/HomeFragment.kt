@@ -8,12 +8,17 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import edu.uoc.pac4.ui.streams.PaginationScrollListener
+import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.android.synthetic.main.fragment_home.view.*
 import lestelabs.binanceapi.R
 import lestelabs.binanceapi.databinding.FragmentHomeBinding
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import lestelabs.binanceapi.ui.adapters.StreamsAdapter
 
-class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
+
+class HomeFragment : Fragment() {
 
     private lateinit var homeViewModel: HomeViewModel
     private var _binding: FragmentHomeBinding? = null
@@ -22,11 +27,14 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
     // onDestroyView.
     private val binding get() = _binding!!
 
+    private val adapter = StreamsAdapter()
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         homeViewModel =
             ViewModelProvider(this).get(HomeViewModel::class.java)
 
@@ -39,29 +47,30 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         })
 
         // Init RecyclerView
-        initRecyclerView()
-
-
-
-
-
+        initRecyclerView(root)
+        // Init LiveData Observers
+        initObservers()
+        // Get Streams
+        homeViewModel.getStreams(refresh = true)
 
         return root
     }
 
-    private fun initRecyclerView() {
-        // Set Layout Manager
-        recyclerView.layoutManager = layoutManager
+  private fun initRecyclerView(view: View) {
+
+      // Set Layout Manager
+      val layoutManager = LinearLayoutManager(requireActivity())
+        view.recyclerView.layoutManager = layoutManager
         // Set Adapter
-        recyclerView.adapter = adapter
+        view.recyclerView.adapter = adapter
         // Set Pagination Listener
-        recyclerView.addOnScrollListener(object : PaginationScrollListener(layoutManager) {
+        view.recyclerView.addOnScrollListener(object : PaginationScrollListener(layoutManager) {
             override fun loadMoreItems() {
-                viewModel.getStreams(refresh = false)
+                homeViewModel.getStreams(refresh = false)
             }
 
             override fun isLastPage(): Boolean {
-                return !viewModel.areMoreStreamsAvailable()
+                return !homeViewModel.areMoreStreamsAvailable()
             }
 
             override fun isLoading(): Boolean {
@@ -70,13 +79,24 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         })
     }
 
+    private fun initObservers() {
+        // Loading
+        homeViewModel.isLoading.observe(requireActivity()) {
+            swipeRefreshLayout.isRefreshing = it
+        }
+        // Streams
+        homeViewModel.streams.second.observe(requireActivity()) {
+            adapter.submitList(it)
+        }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
 
     // Swipe to Refresh Listener
-    override fun onRefresh() {
-        viewModel.getStreams(refresh = true)
-    }
+/*    override fun onRefresh() {
+        //homeViewModel.getStreams(refresh = true)
+    }*/
 }

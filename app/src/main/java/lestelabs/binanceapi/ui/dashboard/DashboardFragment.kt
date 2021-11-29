@@ -113,10 +113,9 @@ class DashboardFragment : Fragment() {
         //val candlesticksCacheExample = CandlesticksCacheExample("ETHBTC", CandlestickInterval.ONE_MINUTE);
         //Log.d(TAG, "binance candle ADA $candlesticksCacheExample")
 
-        val candleSticks = binance?.restClient?.let { binance?.interval?.let { it1 ->
-            Binance().getCandleSticks(it, symbol,
-                it1
-            )
+        val candleSticks = binance?.syncClient?.let { binance?.interval?.let { it1 ->
+            Binance().getCandleSticksSync(symbol)
+
         } }
         candleSticks?.first?.let {
             charts.printLinearGraph(binding.graphView1,

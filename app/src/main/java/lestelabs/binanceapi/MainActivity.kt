@@ -22,6 +22,7 @@ import lestelabs.binanceapi.binance.api.client.domain.event.AccountUpdateEvent
 import lestelabs.binanceapi.binance.api.client.domain.event.OrderTradeUpdateEvent
 import lestelabs.binanceapi.binance.api.client.domain.event.UserDataUpdateEvent
 import lestelabs.binanceapi.databinding.ActivityMainBinding
+
 import lestelabs.binanceapi.ui.adapters.StreamsAdapter
 
 
@@ -48,12 +49,6 @@ class MainActivity : AppCompatActivity(), RetrieveDataInterface {
     lateinit var binanceKeepAlive: Runnable
 
 
-    // List
-    private val adapter = StreamsAdapter()
-
-
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -77,9 +72,6 @@ class MainActivity : AppCompatActivity(), RetrieveDataInterface {
         navView.setupWithNavController(navController)
 
 
-
-
-        val tvNotification = findViewById<TextView>(R.id.tvNotification)
         mainHandler = Handler(Looper.getMainLooper())
         init_binance()
         init_notification()
@@ -102,7 +94,7 @@ class MainActivity : AppCompatActivity(), RetrieveDataInterface {
         // First, we obtain a listenKey which is required to interact with the user data stream
 
         // First, we obtain a listenKey which is required to interact with the user data stream
-        val listenKey = binance.restClient.startUserDataStream()
+        val listenKey = binance.syncClient.startUserDataStream()
 
         binance.webSocketClient.onUserDataUpdateEvent(listenKey) { response ->
             if (response.eventType === UserDataUpdateEvent.UserDataUpdateEventType.ACCOUNT_POSITION_UPDATE) {
@@ -130,7 +122,7 @@ class MainActivity : AppCompatActivity(), RetrieveDataInterface {
 
         binanceKeepAlive = object : Runnable {
             override fun run() {
-                binance.restClient.keepAliveUserDataStream(listenKey);
+                binance.syncClient.keepAliveUserDataStream(listenKey);
                 mainHandler.postDelayed(this, 1000*15)
                 Log.d(TAG, "binance keep alive")
             }
