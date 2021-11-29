@@ -4,15 +4,12 @@ package lestelabs.binanceapi
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.*
 import android.os.StrictMode.ThreadPolicy
 import android.util.Log
-import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
@@ -21,16 +18,11 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import lestelabs.binanceapi.binance.Binance
-import lestelabs.binanceapi.binance.api.client.BinanceApiClientFactory
-import lestelabs.binanceapi.binance.api.client.BinanceApiRestClient
-import lestelabs.binanceapi.binance.api.client.BinanceApiWebSocketClient
-import lestelabs.binanceapi.binance.api.client.domain.account.Account
 import lestelabs.binanceapi.binance.api.client.domain.event.AccountUpdateEvent
 import lestelabs.binanceapi.binance.api.client.domain.event.OrderTradeUpdateEvent
 import lestelabs.binanceapi.binance.api.client.domain.event.UserDataUpdateEvent
-import lestelabs.binanceapi.binance.api.client.domain.market.CandlestickInterval
-import lestelabs.binanceapi.charts.Charts
 import lestelabs.binanceapi.databinding.ActivityMainBinding
+import lestelabs.binanceapi.ui.adapters.StreamsAdapter
 
 
 interface RetrieveDataInterface {
@@ -56,6 +48,12 @@ class MainActivity : AppCompatActivity(), RetrieveDataInterface {
     lateinit var binanceKeepAlive: Runnable
 
 
+    // List
+    private val adapter = StreamsAdapter()
+
+
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -79,12 +77,66 @@ class MainActivity : AppCompatActivity(), RetrieveDataInterface {
         navView.setupWithNavController(navController)
 
 
+        // Init RecyclerView
+        initRecyclerView()
+        // Swipe to Refresh Listener
+        swipeRefreshLayout.setOnRefreshListener {
+            viewModel.getStreams(refresh = true)
+        }
+        // Init LiveData Observers
+        initObservers()
+        // Get Streams
+        viewModel.getStreams(refresh = true)
+
+
+
         val tvNotification = findViewById<TextView>(R.id.tvNotification)
         mainHandler = Handler(Looper.getMainLooper())
         init_binance()
         init_notification()
         init_listener_user_binance_updates()
 
+    }
+
+    private fun initRecyclerView() {
+        // Set Layout Manager
+        recyclerView.layoutManager = layoutManager
+        // Set Adapter
+        recyclerView.adapter = adapter
+        // Set Pagination Listener
+        recyclerView.addOnScrollListener(object : PaginationScrollListener(layoutManager) {
+            override fun loadMoreItems() {
+                viewModel.getStreams(refresh = false)
+            }
+
+            override fun isLastPage(): Boolean {
+                return !viewModel.areMoreStreamsAvailable()
+            }
+
+            override fun isLoading(): Boolean {
+                return swipeRefreshLayout.isRefreshing
+            }
+        })
+    }
+
+    private fun initObservers() {
+        // Loading
+        viewModel.isLoading.observe(this) {
+            swipeRefreshLayout.isRefreshing = it
+        }
+        // Streams
+        viewModel.streams.observe(this) {
+            adapter.submitList(it)
+        }
+        // Logged out
+        viewModel.isLoggedOut.observe(this) {
+            if (it) {
+                // Close Activity
+                finish()
+                // Open Login
+                startActivity(Intent(this, LoginActivity::class.java))
+            }
+        }
     }
 
 

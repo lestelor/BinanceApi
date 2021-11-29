@@ -10,8 +10,10 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import lestelabs.binanceapi.R
 import lestelabs.binanceapi.databinding.FragmentHomeBinding
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
     private lateinit var homeViewModel: HomeViewModel
     private var _binding: FragmentHomeBinding? = null
@@ -35,11 +37,46 @@ class HomeFragment : Fragment() {
         homeViewModel.text.observe(viewLifecycleOwner, Observer {
             textView.text = it
         })
+
+        // Init RecyclerView
+        initRecyclerView()
+
+
+
+
+
+
         return root
+    }
+
+    private fun initRecyclerView() {
+        // Set Layout Manager
+        recyclerView.layoutManager = layoutManager
+        // Set Adapter
+        recyclerView.adapter = adapter
+        // Set Pagination Listener
+        recyclerView.addOnScrollListener(object : PaginationScrollListener(layoutManager) {
+            override fun loadMoreItems() {
+                viewModel.getStreams(refresh = false)
+            }
+
+            override fun isLastPage(): Boolean {
+                return !viewModel.areMoreStreamsAvailable()
+            }
+
+            override fun isLoading(): Boolean {
+                return swipeRefreshLayout.isRefreshing
+            }
+        })
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    // Swipe to Refresh Listener
+    override fun onRefresh() {
+        viewModel.getStreams(refresh = true)
     }
 }
