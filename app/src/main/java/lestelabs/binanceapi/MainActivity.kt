@@ -77,17 +77,6 @@ class MainActivity : AppCompatActivity(), RetrieveDataInterface {
         navView.setupWithNavController(navController)
 
 
-        // Init RecyclerView
-        initRecyclerView()
-        // Swipe to Refresh Listener
-        swipeRefreshLayout.setOnRefreshListener {
-            viewModel.getStreams(refresh = true)
-        }
-        // Init LiveData Observers
-        initObservers()
-        // Get Streams
-        viewModel.getStreams(refresh = true)
-
 
 
         val tvNotification = findViewById<TextView>(R.id.tvNotification)
@@ -96,47 +85,6 @@ class MainActivity : AppCompatActivity(), RetrieveDataInterface {
         init_notification()
         init_listener_user_binance_updates()
 
-    }
-
-    private fun initRecyclerView() {
-        // Set Layout Manager
-        recyclerView.layoutManager = layoutManager
-        // Set Adapter
-        recyclerView.adapter = adapter
-        // Set Pagination Listener
-        recyclerView.addOnScrollListener(object : PaginationScrollListener(layoutManager) {
-            override fun loadMoreItems() {
-                viewModel.getStreams(refresh = false)
-            }
-
-            override fun isLastPage(): Boolean {
-                return !viewModel.areMoreStreamsAvailable()
-            }
-
-            override fun isLoading(): Boolean {
-                return swipeRefreshLayout.isRefreshing
-            }
-        })
-    }
-
-    private fun initObservers() {
-        // Loading
-        viewModel.isLoading.observe(this) {
-            swipeRefreshLayout.isRefreshing = it
-        }
-        // Streams
-        viewModel.streams.observe(this) {
-            adapter.submitList(it)
-        }
-        // Logged out
-        viewModel.isLoggedOut.observe(this) {
-            if (it) {
-                // Close Activity
-                finish()
-                // Open Login
-                startActivity(Intent(this, LoginActivity::class.java))
-            }
-        }
     }
 
 

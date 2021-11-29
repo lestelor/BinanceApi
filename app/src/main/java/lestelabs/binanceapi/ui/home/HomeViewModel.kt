@@ -4,8 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import lestelabs.binanceapi.data.streams.StreamsRepository
-import lestelabs.binanceapi.data.streams.model.Stream
+import lestelabs.binanceapi.data.streams.model.
 import kotlinx.coroutines.launch
 
 class HomeViewModel(private val repository: StreamsRepository) : ViewModel() {
