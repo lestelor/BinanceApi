@@ -1,6 +1,6 @@
 package lestelabs.binanceapi.binance.examples;
 
-import lestelabs.binanceapi.binance.api.client.domain.market.Candlestick;
+import lestelabs.binanceapi.data.streams.datasource.Candlestick;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 
@@ -33,17 +33,17 @@ public class CandlestickDeserializerTest {
     ObjectMapper mapper = new ObjectMapper();
     try {
       Candlestick candlestick = mapper.readValue(candlestickJson, Candlestick.class);
-      assertEquals((long)candlestick.getAOpenTime(), 1499040000000L);
-      assertEquals(candlestick.getBOpen(), "0.01634790");
-      assertEquals(candlestick.getCHigh(), "0.80000000");
-      assertEquals(candlestick.getDLow(), "0.01575800");
-      assertEquals(candlestick.getEClose(), "0.01577100");
-      assertEquals(candlestick.getFVolume(), "148976.11427815");
-      assertEquals((long)candlestick.getGCloseTime(), 1499644799999L);
-      assertEquals(candlestick.getHQuoteAssetVolume(), "2434.19055334");
-      assertEquals((long)candlestick.getINumberOfTrades(), 308L);
-      assertEquals(candlestick.getJTakerBuyBaseAssetVolume(), "1756.87402397");
-      assertEquals(candlestick.getKTakerBuyQuoteAssetVolume(), "28.46694368");
+      assertEquals((long)candlestick.getOpenTime(), 1499040000000L);
+      assertEquals(candlestick.getOpen(), "0.01634790");
+      assertEquals(candlestick.getHigh(), "0.80000000");
+      assertEquals(candlestick.getLow(), "0.01575800");
+      assertEquals(candlestick.getClose(), "0.01577100");
+      assertEquals(candlestick.getVolume(), "148976.11427815");
+      assertEquals((long)candlestick.getCloseTime(), 1499644799999L);
+      assertEquals(candlestick.getQuoteAssetVolume(), "2434.19055334");
+      assertEquals((long)candlestick.getNumberOfTrades(), 308L);
+      assertEquals(candlestick.getTakerBuyBaseAssetVolume(), "1756.87402397");
+      assertEquals(candlestick.getTakerBuyQuoteAssetVolume(), "28.46694368");
     } catch (IOException e) {
       fail();
     }

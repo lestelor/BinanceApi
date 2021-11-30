@@ -3,7 +3,7 @@ package lestelabs.binanceapi.binance.examples;
 import lestelabs.binanceapi.binance.api.client.BinanceApiClientFactory;
 import lestelabs.binanceapi.binance.api.client.BinanceApiRestClient;
 import lestelabs.binanceapi.binance.api.client.BinanceApiWebSocketClient;
-import lestelabs.binanceapi.binance.api.client.domain.market.Candlestick;
+import lestelabs.binanceapi.data.streams.datasource.Candlestick;
 import lestelabs.binanceapi.binance.api.client.domain.market.CandlestickInterval;
 
 import java.util.List;
@@ -36,7 +36,7 @@ public class CandlesticksCacheExample {
     this.candlesticksCache = new TreeMap<>();
     for (Candlestick candlestickBar : candlestickBars) {
       Integer aaaa = 1;
-      candlesticksCache.put(candlestickBar.getAOpenTime(), candlestickBar);
+      candlesticksCache.put(candlestickBar.getOpenTime(), candlestickBar);
     }
   }
 
@@ -55,17 +55,17 @@ public class CandlesticksCacheExample {
         updateCandlestick = new Candlestick();
       }
       // update candlestick with the stream data
-      updateCandlestick.setAOpenTime(response.getOpenTime());
-      updateCandlestick.setBOpen(response.getOpen());
-      updateCandlestick.setCHigh(response.getHigh());
-      updateCandlestick.setDLow(response.getLow());
-      updateCandlestick.setEClose(response.getClose());
-      updateCandlestick.setFVolume(response.getVolume());
-      updateCandlestick.setGCloseTime(response.getCloseTime());
-      updateCandlestick.setHQuoteAssetVolume(response.getQuoteAssetVolume());
-      updateCandlestick.setINumberOfTrades(response.getNumberOfTrades());
-      updateCandlestick.setJTakerBuyBaseAssetVolume(response.getTakerBuyBaseAssetVolume());
-      updateCandlestick.setKTakerBuyQuoteAssetVolume(response.getTakerBuyQuoteAssetVolume());
+      updateCandlestick.setOpenTime(response.getOpenTime());
+      updateCandlestick.setOpen(response.getOpen());
+      updateCandlestick.setHigh(response.getHigh());
+      updateCandlestick.setLow(response.getLow());
+      updateCandlestick.setClose(response.getClose());
+      updateCandlestick.setVolume(response.getVolume());
+      updateCandlestick.setCloseTime(response.getCloseTime());
+      updateCandlestick.setQuoteAssetVolume(response.getQuoteAssetVolume());
+      updateCandlestick.setNumberOfTrades(response.getNumberOfTrades());
+      updateCandlestick.setTakerBuyBaseAssetVolume(response.getTakerBuyBaseAssetVolume());
+      updateCandlestick.setTakerBuyQuoteAssetVolume(response.getTakerBuyQuoteAssetVolume());
       updateCandlestick.setLStatus(response.getStatus());
 
       // Store the updated candlestick in the cache

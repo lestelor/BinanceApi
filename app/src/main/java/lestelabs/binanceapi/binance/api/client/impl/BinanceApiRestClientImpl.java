@@ -8,6 +8,7 @@ import lestelabs.binanceapi.binance.api.client.domain.account.request.*;
 import lestelabs.binanceapi.binance.api.client.domain.general.Asset;
 import lestelabs.binanceapi.binance.api.client.domain.general.ExchangeInfo;
 import lestelabs.binanceapi.binance.api.client.domain.market.*;
+import lestelabs.binanceapi.data.streams.datasource.Candlestick;
 import retrofit2.Call;
 
 import java.util.List;
@@ -79,7 +80,7 @@ public class BinanceApiRestClientImpl implements BinanceApiRestClient {
 
 	@Override
 	public List<Candlestick> getCandlestickBars(String symbol, CandlestickInterval interval, Integer limit,
-												Long startTime, Long endTime) {
+                                                Long startTime, Long endTime) {
 		return executeSync(
 				binanceApiService.getCandlestickBars(symbol, interval.getIntervalId(), limit, startTime, endTime));
 	}

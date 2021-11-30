@@ -4,14 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import lestelabs.binanceapi.data.streams.StreamsRepository
-import lestelabs.binanceapi.data.streams.model.Stream
 import kotlinx.coroutines.launch
 import lestelabs.binanceapi.binance.Binance
-import lestelabs.binanceapi.binance.api.client.domain.market.Candlestick
+import lestelabs.binanceapi.data.streams.datasource.Candlestick
 import lestelabs.binanceapi.data.network.UnauthorizedException
-import lestelabs.binanceapi.data.streams.datasource.StreamsRemoteDataSource
-import org.apache.commons.lang3.mutable.Mutable
 
 class HomeViewModel : ViewModel() {
 
@@ -21,31 +17,43 @@ class HomeViewModel : ViewModel() {
     val text: LiveData<String> = _text
 
     // Observables
-    val streams = Pair(MutableLiveData<String>(), MutableLiveData<MutableList<Candlestick>?>())
+    //val streams = Pair(MutableLiveData<String>(), MutableLiveData<Candlestick?>())
+    val streams = MutableLiveData<List<Candlestick?>>()
     val isLoading = MutableLiveData<Boolean>(false)
     val isLoggedOut = MutableLiveData<Boolean>(false)
 
-    private var cursor: String? = null
+    private var cursor: Int = 0
+    val binance = Binance()
 
     /// Gets Streams
-    fun getStreams(refresh: Boolean) {
+    fun getStreams(refresh: Boolean, puntero:Int, punteroSizeOffset: Int){
         viewModelScope.launch {
             // Set Loading to true
             isLoading.postValue(true)
             // Get Streams
             try {
-                val streamsResult = Pair("ADAEUR", StreamsRemoteDataSource(
-                    Binance()).getStreams("ADAEUR"))
+                var candlesticks = listOf<Candlestick?>()
+                cursor = puntero
+                for (i in cursor .. cursor + punteroSizeOffset -1) {
+                    if (i < binance.sticks.size) {
+                        val candlestick = binance.getCandleStickComplete(binance.sticks[i]).lastOrNull()
+                        candlesticks = candlesticks.plus(candlestick)
+                    }
+                }
+
+
                 // Set Streams Value
                 if (refresh) {
                     // Set new list
-                    streams.first.postValue(streamsResult.first)
-                    streams.second.postValue(streamsResult.second)
+                    streams.postValue(candlesticks)
                 } else {
                     // Append to current list
-/*                    val totalStreams = mutableListOf(streams.value).add(streamsResult)
-                    streams.postValue(totalStreams)*/
+                    val currentStreams = streams.value.orEmpty()
+                    val totalStreams = currentStreams.plus(candlesticks)
+                    streams.postValue(totalStreams)
+
                 }
+
             } catch (e: UnauthorizedException) {
                 isLoggedOut.postValue(true)
             }
@@ -55,6 +63,6 @@ class HomeViewModel : ViewModel() {
     }
 
     /// Expose if more streams are available for pagination listener
-    fun areMoreStreamsAvailable(): Boolean = cursor != null
+    fun areMoreStreamsAvailable(): Boolean = cursor < Binance().sticks.size
 
 }

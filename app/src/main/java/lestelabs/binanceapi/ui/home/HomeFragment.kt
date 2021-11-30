@@ -9,13 +9,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import edu.uoc.pac4.ui.streams.PaginationScrollListener
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.fragment_home.view.*
-import lestelabs.binanceapi.R
 import lestelabs.binanceapi.databinding.FragmentHomeBinding
-import lestelabs.binanceapi.ui.adapters.StreamsAdapter
 
 
 class HomeFragment : Fragment() {
@@ -28,6 +24,8 @@ class HomeFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val adapter = StreamsAdapter()
+    private var cursor = 0
+    private var cursorSizeOffset = 2
 
 
     override fun onCreateView(
@@ -51,7 +49,7 @@ class HomeFragment : Fragment() {
         // Init LiveData Observers
         initObservers()
         // Get Streams
-        homeViewModel.getStreams(refresh = true)
+        homeViewModel.getStreams(true,0, cursorSizeOffset)
 
         return root
     }
@@ -66,7 +64,8 @@ class HomeFragment : Fragment() {
         // Set Pagination Listener
         view.recyclerView.addOnScrollListener(object : PaginationScrollListener(layoutManager) {
             override fun loadMoreItems() {
-                homeViewModel.getStreams(refresh = false)
+                cursor += cursorSizeOffset
+                homeViewModel.getStreams(refresh = false, cursor, cursorSizeOffset)
             }
 
             override fun isLastPage(): Boolean {
@@ -85,7 +84,7 @@ class HomeFragment : Fragment() {
             swipeRefreshLayout.isRefreshing = it
         }
         // Streams
-        homeViewModel.streams.second.observe(requireActivity()) {
+        homeViewModel.streams.observe(requireActivity()) {
             adapter.submitList(it)
         }
     }

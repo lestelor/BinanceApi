@@ -13,10 +13,10 @@ import lestelabs.binanceapi.binance.api.client.domain.general.Asset;
 import lestelabs.binanceapi.binance.api.client.domain.general.ExchangeInfo;
 import lestelabs.binanceapi.binance.api.client.domain.general.ServerTime;
 import lestelabs.binanceapi.binance.api.client.domain.market.*;
+import lestelabs.binanceapi.data.streams.datasource.Candlestick;
 import retrofit2.Call;
 import retrofit2.http.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

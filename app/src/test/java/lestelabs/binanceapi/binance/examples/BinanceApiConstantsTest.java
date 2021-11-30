@@ -1,10 +1,8 @@
 package lestelabs.binanceapi.binance.examples;
 
-import lestelabs.binanceapi.binance.api.client.domain.market.Candlestick;
+import lestelabs.binanceapi.data.streams.datasource.Candlestick;
 import lestelabs.binanceapi.binance.api.client.constant.BinanceApiConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.junit.AfterClass;

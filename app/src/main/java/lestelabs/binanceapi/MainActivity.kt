@@ -23,8 +23,6 @@ import lestelabs.binanceapi.binance.api.client.domain.event.OrderTradeUpdateEven
 import lestelabs.binanceapi.binance.api.client.domain.event.UserDataUpdateEvent
 import lestelabs.binanceapi.databinding.ActivityMainBinding
 
-import lestelabs.binanceapi.ui.adapters.StreamsAdapter
-
 
 interface RetrieveDataInterface {
     fun retrieveDataInterface():Binance

@@ -1,19 +1,11 @@
 package lestelabs.binanceapi.binance
 
-import android.content.Context
-import android.graphics.Color
 import android.util.Log
-import android.widget.TextView
-import com.jjoe64.graphview.GraphView
 import lestelabs.binanceapi.MainActivity
-import lestelabs.binanceapi.R
-import lestelabs.binanceapi.binance.api.client.BinanceApiAsyncRestClient
-import lestelabs.binanceapi.binance.api.client.BinanceApiClientFactory
-import lestelabs.binanceapi.binance.api.client.BinanceApiRestClient
-import lestelabs.binanceapi.binance.api.client.BinanceApiWebSocketClient
+import lestelabs.binanceapi.binance.api.client.*
 import lestelabs.binanceapi.binance.api.client.domain.market.CandlestickInterval
-import lestelabs.binanceapi.charts.Charts
 import lestelabs.binanceapi.charts.Indicators
+import lestelabs.binanceapi.data.streams.datasource.Candlestick
 import java.lang.Exception
 
 class Binance() {
@@ -25,6 +17,7 @@ class Binance() {
     val offset = 50
     val sticks = arrayOf("ADAEUR", "BTCEUR", "ETHEUR", "DOGEEUR")
     val interval = CandlestickInterval.HOURLY
+    val TAG="Binance"
 
 
     private fun initFactory(): BinanceApiClientFactory {
@@ -40,6 +33,22 @@ class Binance() {
         return factory.newWebSocketClient()
     }
 
+    fun getCandleStickComplete(symbol: String): MutableList<Candlestick> {
+        var response = syncClient.getCandlestickBars(symbol, interval)
+        var inputIndicators = DoubleArray (response.size)
+        for (i in 0 until response.size) {
+            response[i].stick = symbol
+            inputIndicators[i] = response[i].close.toDouble()
+        }
+        val sma = Indicators.movingAverage(inputIndicators, offset)
+        val rsi = Indicators.rsi(inputIndicators, offset)
+        for (i in offset until response.size) {
+
+            response[i].setSma(sma[i-offset])
+            response[i].setRsi(rsi[i-offset])
+        }
+        return response
+    }
 
     fun getCandleSticksSync(symbol:String): Pair<List<Long>,Pair<MutableList<DoubleArray>, MutableList<DoubleArray>>> {
         try {
@@ -53,8 +62,8 @@ class Binance() {
             val candlesticksDate =  LongArray(candleStickBars.size)
 
             for (i in 0 .. candleStickBars.size-1) {
-                candlesticksClosePrice[i] = candleStickBars[i].eClose.toDouble()
-                candlesticksDate[i] = candleStickBars[i].gCloseTime
+                candlesticksClosePrice[i] = candleStickBars[i].close.toDouble()
+                candlesticksDate[i] = candleStickBars[i].closeTime
                 //candlesticksClosePrice[i] = i.toDouble()
                 //candlesticksDate[i] = i.toDouble()
             }

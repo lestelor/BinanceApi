@@ -21,7 +21,7 @@ import lestelabs.binanceapi.binance.api.client.domain.general.ExchangeInfo;
 import lestelabs.binanceapi.binance.api.client.domain.general.ServerTime;
 import lestelabs.binanceapi.binance.api.client.domain.market.AggTrade;
 import lestelabs.binanceapi.binance.api.client.domain.market.BookTicker;
-import lestelabs.binanceapi.binance.api.client.domain.market.Candlestick;
+import lestelabs.binanceapi.data.streams.datasource.Candlestick;
 import lestelabs.binanceapi.binance.api.client.domain.market.CandlestickInterval;
 import lestelabs.binanceapi.binance.api.client.domain.market.OrderBook;
 import lestelabs.binanceapi.binance.api.client.domain.market.TickerPrice;

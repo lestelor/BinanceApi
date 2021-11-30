@@ -1,4 +1,4 @@
-package edu.uoc.pac4.ui.streams
+package lestelabs.binanceapi.ui.home
 
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
