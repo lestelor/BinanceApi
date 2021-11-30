@@ -25,7 +25,7 @@ class HomeFragment : Fragment() {
 
     private val adapter = StreamsAdapter()
     private var cursor = 0
-    private var cursorSizeOffset = 2
+    private var cursorSizeOffset = 5
 
 
     override fun onCreateView(

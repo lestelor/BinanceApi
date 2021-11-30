@@ -3,10 +3,12 @@ package lestelabs.binanceapi.binance
 import android.util.Log
 import lestelabs.binanceapi.MainActivity
 import lestelabs.binanceapi.binance.api.client.*
+import lestelabs.binanceapi.binance.api.client.domain.general.ExchangeInfo
 import lestelabs.binanceapi.binance.api.client.domain.market.CandlestickInterval
 import lestelabs.binanceapi.charts.Indicators
 import lestelabs.binanceapi.data.streams.datasource.Candlestick
 import java.lang.Exception
+import kotlin.math.E
 
 class Binance() {
 
@@ -15,7 +17,7 @@ class Binance() {
     val asyncClient: BinanceApiAsyncRestClient = initAsyncClient(factory)
     val webSocketClient: BinanceApiWebSocketClient = initWebSocketClient()
     val offset = 50
-    val sticks = arrayOf("ADAEUR", "BTCEUR", "ETHEUR", "DOGEEUR")
+    val sticks = arrayOf("ADAEUR", "BTCEUR", "ETHEUR", "SOLEUR", "BNBEUR", "IOTXBTC", "DOGEEUR", "SHIBEUR", "LUNABTC", "SANDBTC", "MANABTC" )
     val interval = CandlestickInterval.HOURLY
     val TAG="Binance"
 
@@ -33,6 +35,7 @@ class Binance() {
         return factory.newWebSocketClient()
     }
 
+
     fun getCandleStickComplete(symbol: String): MutableList<Candlestick> {
         var response = syncClient.getCandlestickBars(symbol, interval)
         var inputIndicators = DoubleArray (response.size)
@@ -43,7 +46,6 @@ class Binance() {
         val sma = Indicators.movingAverage(inputIndicators, offset)
         val rsi = Indicators.rsi(inputIndicators, offset)
         for (i in offset until response.size) {
-
             response[i].setSma(sma[i-offset])
             response[i].setRsi(rsi[i-offset])
         }

@@ -1,5 +1,9 @@
 package lestelabs.binanceapi.binance.api.client.domain.general;
 
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
 import lestelabs.binanceapi.binance.api.client.constant.BinanceApiConstants;
 import lestelabs.binanceapi.binance.api.client.exception.BinanceApiException;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -60,6 +64,7 @@ public class ExchangeInfo {
    * @param symbol the symbol to obtain information for (e.g. ETHBTC)
    * @return symbol exchange information
    */
+  @RequiresApi(api = Build.VERSION_CODES.N)
   public SymbolInfo getSymbolInfo(String symbol) {
     return symbols.stream().filter(symbolInfo -> symbolInfo.getSymbol().equals(symbol))
         .findFirst()
