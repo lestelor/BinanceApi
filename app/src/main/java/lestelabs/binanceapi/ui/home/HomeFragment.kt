@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.fragment_home.view.*
 import lestelabs.binanceapi.databinding.FragmentHomeBinding
@@ -25,7 +26,7 @@ class HomeFragment : Fragment() {
 
     private val adapter = StreamsAdapter()
     private var cursor = 0
-    private var cursorSizeOffset = 5
+    private var cursorSizeOffset = 4
 
 
     override fun onCreateView(
@@ -48,16 +49,18 @@ class HomeFragment : Fragment() {
         initRecyclerView(root)
         // Init LiveData Observers
         initObservers()
+        //Init refresh
+        initRefresh(root)
         // Get Streams
-        homeViewModel.getStreams(true,0, cursorSizeOffset)
+        homeViewModel.getStreams(true, 0, cursorSizeOffset)
 
         return root
     }
 
-  private fun initRecyclerView(view: View) {
+    private fun initRecyclerView(view: View) {
 
-      // Set Layout Manager
-      val layoutManager = LinearLayoutManager(requireActivity())
+        // Set Layout Manager
+        val layoutManager = LinearLayoutManager(requireActivity())
         view.recyclerView.layoutManager = layoutManager
         // Set Adapter
         view.recyclerView.adapter = adapter
@@ -89,13 +92,16 @@ class HomeFragment : Fragment() {
         }
     }
 
+    fun initRefresh(view: View) {
+        // Swipe to Refresh Listener
+        view.swipeRefreshLayout.setOnRefreshListener {
+            cursor = 0
+            homeViewModel.getStreams(refresh = true, cursor, cursorSizeOffset)
+        }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
-
-    // Swipe to Refresh Listener
-/*    override fun onRefresh() {
-        //homeViewModel.getStreams(refresh = true)
-    }*/
 }

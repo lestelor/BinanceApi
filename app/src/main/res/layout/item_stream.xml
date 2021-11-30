@@ -13,7 +13,7 @@
         android:orientation="vertical">
 
         <LinearLayout
-            android:id="@+id/viewsContainer"
+            android:id="@+id/viewsContainer1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_medium"
@@ -25,21 +25,49 @@
                 android:layout_marginEnd="@dimen/margin_small"
                 android:src="@drawable/ic_eye"/>
             <TextView
-                android:id="@+id/viewsText"
+                android:id="@+id/recycler_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="100 Views"/>
+                tools:text="BTCEUR"/>
+            <TextView
+                android:id="@+id/recycler_price"
+                android:layout_marginStart="12dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="0.3344556"/>
+            <TextView
+                android:id="@+id/recycler_owned"
+                android:layout_marginStart="12dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="1"/>
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/title"
-            style="@style/TextAppearance.MaterialComponents.Headline4"
+        <LinearLayout
+            android:id="@+id/viewsContainer2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_medium"
-            android:layout_marginEnd="@dimen/margin_medium"
-            android:lines="1"
-            tools:text="ibai" />
+            android:layout_marginTop="@dimen/margin_medium"
+            android:orientation="horizontal"
+            android:layout_gravity="end">
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/recycler_sma"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="SMA"/>
+            <TextView
+                android:id="@+id/recycler_rsi"
+                android:layout_marginStart="12dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="RSI"/>
+            <TextView
+                android:id="@+id/recycler_percentage"
+                android:layout_marginStart="12dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="%"/>
+        </LinearLayout>
+        </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

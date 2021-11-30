@@ -41,7 +41,6 @@ class HomeViewModel : ViewModel() {
                     }
                 }
 
-
                 // Set Streams Value
                 if (refresh) {
                     // Set new list

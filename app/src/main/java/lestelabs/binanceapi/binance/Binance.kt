@@ -46,8 +46,8 @@ class Binance() {
         val sma = Indicators.movingAverage(inputIndicators, offset)
         val rsi = Indicators.rsi(inputIndicators, offset)
         for (i in offset until response.size) {
-            response[i].setSma(sma[i-offset])
-            response[i].setRsi(rsi[i-offset])
+            response[i].sma = sma[i-offset]
+            response[i].rsi = rsi[i-offset]
         }
         return response
     }

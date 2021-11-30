@@ -143,16 +143,16 @@ public class Candlestick {
     this.stick = stick;
   }
 
-  public Double getSma(Double sma) {return sma;}
+  public Double getSma() {return sma;}
 
   public void setSma(Double sma) {
     this.sma = sma;
   }
 
-  public Double getRsi(Double rsi) {return rsi;}
+  public Double getRsi() {return rsi;}
 
   public void setRsi(Double rsi) {
-    this.sma = rsi;
+    this.rsi = rsi;
   }
 
   @NonNull

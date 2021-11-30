@@ -1,5 +1,6 @@
 package lestelabs.binanceapi.ui.home
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -32,8 +33,24 @@ class StreamsAdapter : ListAdapter<Candlestick, StreamsAdapter.StreamViewHolder>
         fun bindTo(candlestick: Candlestick) {
 
             // Set Stream Info
-            itemView.title.text = candlestick.stick
-            itemView.viewsText.text = candlestick.close
+            itemView.recycler_name.text = candlestick.stick
+            itemView.recycler_price.text = "price: " + "%.5f".format(candlestick.close.toDouble())
+            itemView.recycler_owned.text = "por implementar"
+            itemView.recycler_sma.text = "sma: " + "%.5f".format(candlestick.sma.toDouble())
+            itemView.recycler_rsi.text = "rsi: " + "%.2f".format(candlestick.rsi.toDouble())
+            val percentage = (candlestick.sma - candlestick.close.toDouble())/(candlestick.close.toDouble())*100
+            itemView.recycler_percentage.text = "%: " + "%.1f".format(percentage)
+
+            if(candlestick.sma >= candlestick.close.toDouble()) {
+                itemView.recycler_sma.setTextColor(Color.GREEN)
+            } else itemView.recycler_sma.setTextColor(Color.RED)
+
+            if(candlestick.rsi >= 70.0) {
+                itemView.recycler_rsi.setTextColor(Color.RED)
+            } else if (candlestick.rsi <= 30.0) itemView.recycler_rsi.setTextColor(Color.GREEN)
+            else itemView.recycler_rsi.setTextColor(Color.BLACK)
+
+
 
             // Set Stream Image
 /*            candlestick.thumbnailUrl
