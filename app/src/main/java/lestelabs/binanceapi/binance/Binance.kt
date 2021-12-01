@@ -38,6 +38,14 @@ class Binance() {
     }
 
 
+    fun getBalance(symbol:String): List<String> {
+        val output: MutableList<String> = mutableListOf()
+        val value = syncClient.account.getAssetBalance(symbol)
+        output.add(value.free)
+        output.add(value.locked)
+        return output
+    }
+
     fun getCandleStickComplete(symbol: String): MutableList<Candlestick> {
         val symbolShort = symbol.substring(0,symbol.length-1-2).toString()
         val response = syncClient.getCandlestickBars(symbol, interval)

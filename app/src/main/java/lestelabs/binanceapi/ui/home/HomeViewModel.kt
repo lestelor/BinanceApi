@@ -15,11 +15,13 @@ class HomeViewModel : ViewModel() {
     val binance = Binance()
 
     private val _text = MutableLiveData<String>().apply {
-        value = binance.syncClient.account.getAssetBalance("EUR").toString()
+        val balances = binance.getBalance("EUR")
+        value = "free: " + balances[0] + " locked: " + balances[1]
     }
     val text: LiveData<String> = _text
     val streams = MutableLiveData<List<Candlestick?>>()
     val isLoading = MutableLiveData<Boolean>(false)
+    val isReload = MutableLiveData<Boolean>(false)
     val isLoggedOut = MutableLiveData<Boolean>(false)
 
 

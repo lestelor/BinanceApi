@@ -15,6 +15,10 @@ import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.fragment_home.view.*
 import lestelabs.binanceapi.binance.Binance
 import lestelabs.binanceapi.databinding.FragmentHomeBinding
+import android.R
+
+
+
 
 
 class HomeFragment : Fragment() {
@@ -73,6 +77,10 @@ class HomeFragment : Fragment() {
 
             override fun isLoading(): Boolean {
                 return swipeRefreshLayout.isRefreshing
+            }
+
+            override fun isReload(): Boolean {
+                return homeViewModel.isReload.value?:false
             }
         })
     }

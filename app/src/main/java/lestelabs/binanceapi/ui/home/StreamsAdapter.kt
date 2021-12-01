@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_after_notification.view.*
+import kotlinx.android.synthetic.main.fragment_home.view.*
 import kotlinx.android.synthetic.main.item_stream.view.*
 import lestelabs.binanceapi.R
 import lestelabs.binanceapi.binance.Binance
@@ -17,8 +18,7 @@ import lestelabs.binanceapi.data.streams.datasource.Candlestick
 import lestelabs.binanceapi.binance.api.client.domain.account.request.OrderRequest
 
 import lestelabs.binanceapi.binance.api.client.domain.account.Order
-
-
+import org.koin.ext.scope
 
 
 /**
@@ -40,11 +40,23 @@ class StreamsAdapter : ListAdapter<Candlestick, StreamsAdapter.StreamViewHolder>
         holder.itemView.button_cancel_order.setOnClickListener {
             val binance = Binance()
             val symbol = binance.sticks[position]
+            val symbolShort = symbol.substring(0,symbol.length-4)
             val openOrders: List<Order> = binance.syncClient.getOpenOrders(OrderRequest(symbol))
-            val firstOpenOrder = openOrders[0].orderId
-            binance.syncClient.cancelOrder(CancelOrderRequest(symbol,firstOpenOrder))
-            Toast.makeText(it.context,"Order $firstOpenOrder cancelled. Now reloading ...", Toast.LENGTH_LONG).show()
-            notifyDataSetChanged()
+
+            if (openOrders.isNotEmpty()) {
+                val firstOpenOrder = openOrders[0].orderId
+                binance.syncClient.cancelOrder(CancelOrderRequest(symbol,firstOpenOrder))
+                Toast.makeText(it.context,"Order $firstOpenOrder cancelled. Now reloading ...", Toast.LENGTH_LONG).show()
+                /*val balancesEUR = binance.getBalance("EUR")
+                holder.itemView.text_home.text = "free: " + balancesEUR[0] + " locked: " + balancesEUR[1]
+
+                val balancesStick = binance.getBalance(symbolShort)
+                holder.itemView.recycler_free.text = "free: " + "%5f".format(balancesStick[0])
+                holder.itemView.recycler_locked.text = "locked: " + "%5f".format(balancesStick[1])*/
+                //notifyDataSetChanged()
+            } else Toast.makeText(it.context,"Not found!!", Toast.LENGTH_LONG).show()
+
+
         }
     }
 
