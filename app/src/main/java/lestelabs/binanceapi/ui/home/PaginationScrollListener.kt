@@ -18,6 +18,9 @@ abstract class PaginationScrollListener(private val layoutManager: LinearLayoutM
         super.onScrolled(recyclerView, dx, dy)
         val visibleItemCount = layoutManager.childCount
         val totalItemCount = layoutManager.itemCount
+        if (totalItemCount == Binance().cursorSizeOffset) {
+            previousTotal = 0
+        }
         val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
         if (!isLoading() && !isLastPage() && dy>0) {
             if (visibleItemCount + firstVisibleItemPosition >= totalItemCount

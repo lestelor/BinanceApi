@@ -11,16 +11,18 @@ import lestelabs.binanceapi.data.network.UnauthorizedException
 
 class HomeViewModel : ViewModel() {
 
+    private var cursor: Int = 0
+    val binance = Binance()
+
     private val _text = MutableLiveData<String>().apply {
-        value = "This is home Fragment"
+        value = binance.syncClient.account.getAssetBalance("EUR").toString()
     }
     val text: LiveData<String> = _text
     val streams = MutableLiveData<List<Candlestick?>>()
     val isLoading = MutableLiveData<Boolean>(false)
     val isLoggedOut = MutableLiveData<Boolean>(false)
 
-    private var cursor: Int = 0
-    val binance = Binance()
+
 
     /// Gets Streams
     fun getStreams(refresh: Boolean, puntero:Int, punteroSizeOffset: Int){
@@ -39,6 +41,7 @@ class HomeViewModel : ViewModel() {
                 // Set Streams Value
                 if (refresh) {
                     // Set new list
+                    cursor = 0
                     streams.postValue(candlesticks)
                 } else {
                     // Append to current list

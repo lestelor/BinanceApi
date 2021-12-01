@@ -4,12 +4,22 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.android.synthetic.main.activity_after_notification.view.*
 import kotlinx.android.synthetic.main.item_stream.view.*
 import lestelabs.binanceapi.R
+import lestelabs.binanceapi.binance.Binance
+import lestelabs.binanceapi.binance.api.client.domain.account.request.CancelOrderRequest
 import lestelabs.binanceapi.data.streams.datasource.Candlestick
+import lestelabs.binanceapi.binance.api.client.domain.account.request.OrderRequest
+
+import lestelabs.binanceapi.binance.api.client.domain.account.Order
+
+
+
 
 /**
  * Created by alex on 07/09/2020.
@@ -27,6 +37,15 @@ class StreamsAdapter : ListAdapter<Candlestick, StreamsAdapter.StreamViewHolder>
     override fun onBindViewHolder(holder: StreamViewHolder, position: Int) {
         val candlestick = getItem(position)
         if (candlestick != null ) holder.bindTo(getItem(position))
+        holder.itemView.button_cancel_order.setOnClickListener {
+            val binance = Binance()
+            val symbol = binance.sticks[position]
+            val openOrders: List<Order> = binance.syncClient.getOpenOrders(OrderRequest(symbol))
+            val firstOpenOrder = openOrders[0].orderId
+            binance.syncClient.cancelOrder(CancelOrderRequest(symbol,firstOpenOrder))
+            Toast.makeText(it.context,"Order $firstOpenOrder cancelled. Now reloading ...", Toast.LENGTH_LONG).show()
+            notifyDataSetChanged()
+        }
     }
 
     class StreamViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -53,7 +72,9 @@ class StreamsAdapter : ListAdapter<Candlestick, StreamsAdapter.StreamViewHolder>
             } else if (candlestick.rsi <= 30.0) itemView.recycler_rsi.setTextColor(Color.GREEN)
             else itemView.recycler_rsi.setTextColor(Color.BLACK)
 
-
+            if(candlestick.ownLocked >0) itemView.recycler_locked.setTextColor(Color.BLACK)
+            if(candlestick.ownFree>0) itemView.recycler_free.setTextColor(Color.BLACK)
+            if(candlestick.ownValueEUR >0) itemView.recycler_eur.setTextColor(Color.BLACK)
 
             // Set Stream Image
 /*            candlestick.thumbnailUrl
