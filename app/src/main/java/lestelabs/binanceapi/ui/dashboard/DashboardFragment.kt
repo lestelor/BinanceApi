@@ -58,7 +58,7 @@ class DashboardFragment : Fragment() {
         })
 
         init_binance()
-        init_spinner()
+        init_spinner(root)
 
         return root
     }
@@ -69,7 +69,7 @@ class DashboardFragment : Fragment() {
 
     }
 
-    fun init_spinner() {
+    fun init_spinner(view: View) {
         spinner = binding.spinner1
         val sticks: Array<String> = binance?.sticks?: arrayOf()
 

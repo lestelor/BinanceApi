@@ -35,15 +35,41 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 tools:text="0.3344556"/>
-            <TextView
-                android:id="@+id/recycler_owned"
-                android:layout_marginStart="12dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:text="1"/>
         </LinearLayout>
         <LinearLayout
             android:id="@+id/viewsContainer2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_medium"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:orientation="horizontal"
+            android:layout_gravity="start">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Available: "/>
+            <TextView
+                android:id="@+id/recycler_free"
+                android:layout_marginStart="12dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="free"/>
+            <TextView
+                android:id="@+id/recycler_locked"
+                android:layout_marginStart="12dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="loked"/>
+            <TextView
+                android:id="@+id/recycler_eur"
+                android:layout_marginStart="12dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="euro"/>
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/viewsContainer3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_medium"

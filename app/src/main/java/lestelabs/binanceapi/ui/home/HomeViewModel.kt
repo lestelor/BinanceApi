@@ -16,9 +16,8 @@ class HomeViewModel : ViewModel() {
     }
     val text: LiveData<String> = _text
 
-    // Observables
-    //val streams = Pair(MutableLiveData<String>(), MutableLiveData<Candlestick?>())
     val streams = MutableLiveData<List<Candlestick?>>()
+
     val isLoading = MutableLiveData<Boolean>(false)
     val isLoggedOut = MutableLiveData<Boolean>(false)
 
@@ -27,8 +26,7 @@ class HomeViewModel : ViewModel() {
 
     /// Gets Streams
     fun getStreams(refresh: Boolean, puntero:Int, punteroSizeOffset: Int){
-        viewModelScope.launch {
-            // Set Loading to true
+
             isLoading.postValue(true)
             // Get Streams
             try {
@@ -59,9 +57,8 @@ class HomeViewModel : ViewModel() {
             // Set Loading to false
             isLoading.postValue(false)
         }
-    }
 
     /// Expose if more streams are available for pagination listener
-    fun areMoreStreamsAvailable(): Boolean = cursor < Binance().sticks.size
+    fun areMoreStreamsAvailable(): Boolean = cursor < binance.sticks.size
 
 }

@@ -22,7 +22,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 @JsonFormat(shape = JsonFormat.Shape.ARRAY)
 @JsonPropertyOrder({"openTime","open","high","low","close","volume","closeTime",
         "quoteAssetVolume","numberOfTrades","takerBuyBaseAssetVolume",
-        "takerBuyQuoteAssetVolume","status", "stick", "sma", "rsi"})
+        "takerBuyQuoteAssetVolume","status", "stick", "sma", "rsi", "ownQuantity", "ownValueEUR", "ownValueBTC"})
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Candlestick {
 
@@ -41,6 +41,9 @@ public class Candlestick {
   private String stick;
   private Double sma;
   private Double rsi;
+  private Double ownFree;
+  private Double ownLocked;
+  private Double ownValueEUR;
 
 
   public Long getOpenTime() {
@@ -155,13 +158,30 @@ public class Candlestick {
     this.rsi = rsi;
   }
 
+
+  public Double getOwnFree() {return ownFree;}
+
+  public void setOwnFree(Double ownFree) {
+    this.ownFree = ownFree;
+  }
+
+  public Double getOwnLocked() {return ownLocked;}
+
+  public void setOwnLocked(Double ownLocked) {
+    this.ownLocked = ownLocked;
+  }
+
+  public Double getOwnValueEUR() {return ownValueEUR;}
+
+  public void setOwnValueEUR(Double ownValueEUR) {
+    this.ownValueEUR = ownValueEUR;
+  }
+
+
   @NonNull
   @Override
   public String toString() {
     return new ToStringBuilder(this, BinanceApiConstants.TO_STRING_BUILDER_STYLE)
-
-
-
             .append("openTime", openTime)
             .append("open", open)
             .append("high", high)

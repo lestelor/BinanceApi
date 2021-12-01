@@ -2,6 +2,7 @@ package lestelabs.binanceapi.ui.home
 
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import lestelabs.binanceapi.binance.Binance
 
 
 /**
@@ -12,12 +13,14 @@ abstract class PaginationScrollListener(private val layoutManager: LinearLayoutM
     RecyclerView.OnScrollListener() {
 
 
+
     override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
         super.onScrolled(recyclerView, dx, dy)
+        val itemOffset = Binance().cursorSizeOffset
         val visibleItemCount = layoutManager.childCount
         val totalItemCount = layoutManager.itemCount
         val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
-        if (!isLoading() && !isLastPage()) {
+        if (!isLoading() && !isLastPage() ) {
             if (visibleItemCount + firstVisibleItemPosition >= totalItemCount
                 && firstVisibleItemPosition >= 0
             ) {

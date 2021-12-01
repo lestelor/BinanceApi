@@ -9,9 +9,11 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.fragment_home.view.*
+import lestelabs.binanceapi.binance.Binance
 import lestelabs.binanceapi.databinding.FragmentHomeBinding
 
 
@@ -26,7 +28,7 @@ class HomeFragment : Fragment() {
 
     private val adapter = StreamsAdapter()
     private var cursor = 0
-    private var cursorSizeOffset = 4
+    private var cursorSizeOffset = Binance().cursorSizeOffset
 
 
     override fun onCreateView(
@@ -35,26 +37,25 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         homeViewModel =
-            ViewModelProvider(this).get(HomeViewModel::class.java)
+            ViewModelProvider(this)[HomeViewModel::class.java]
 
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val textView: TextView = binding.textHome
-        homeViewModel.text.observe(viewLifecycleOwner, Observer {
-            textView.text = it
-        })
-
-        // Init RecyclerView
-        initRecyclerView(root)
         // Init LiveData Observers
-        initObservers()
+        initObservers(root)
+        // Init RecyclreView
+        initRecyclerView(root)
         //Init refresh
         initRefresh(root)
-        // Get Streams
-        homeViewModel.getStreams(true, 0, cursorSizeOffset)
 
         return root
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        // Get Streams
+        homeViewModel.getStreams(true, 0, cursorSizeOffset)
     }
 
     private fun initRecyclerView(view: View) {
@@ -70,7 +71,6 @@ class HomeFragment : Fragment() {
                 cursor += cursorSizeOffset
                 homeViewModel.getStreams(refresh = false, cursor, cursorSizeOffset)
             }
-
             override fun isLastPage(): Boolean {
                 return !homeViewModel.areMoreStreamsAvailable()
             }
@@ -81,15 +81,21 @@ class HomeFragment : Fragment() {
         })
     }
 
-    private fun initObservers() {
+    private fun initObservers(view: View) {
+        //Text
+        homeViewModel.text.observe(viewLifecycleOwner, Observer {
+            view.text_home.text = it
+        })
+
         // Loading
         homeViewModel.isLoading.observe(requireActivity()) {
-            swipeRefreshLayout.isRefreshing = it
+            view.swipeRefreshLayout.isRefreshing = it
         }
         // Streams
         homeViewModel.streams.observe(requireActivity()) {
             adapter.submitList(it)
         }
+
     }
 
     fun initRefresh(view: View) {

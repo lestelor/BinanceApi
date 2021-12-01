@@ -34,8 +34,10 @@ class StreamsAdapter : ListAdapter<Candlestick, StreamsAdapter.StreamViewHolder>
 
             // Set Stream Info
             itemView.recycler_name.text = candlestick.stick
-            itemView.recycler_price.text = "price: " + "%.5f".format(candlestick.close.toDouble())
-            itemView.recycler_owned.text = "por implementar"
+            itemView.recycler_price.text = "price: " + "%.5f".format(candlestick.close.toDouble()) + " EUR"
+            itemView.recycler_free.text = "free: " + "%.5f".format(candlestick.ownFree.toDouble())
+            itemView.recycler_locked.text = "locked: " + "%.5f".format(candlestick.ownLocked.toDouble())
+            itemView.recycler_eur.text = "eur: " + "%.2f".format(candlestick.ownValueEUR)
             itemView.recycler_sma.text = "sma: " + "%.5f".format(candlestick.sma.toDouble())
             itemView.recycler_rsi.text = "rsi: " + "%.2f".format(candlestick.rsi.toDouble())
             val percentage = (candlestick.sma - candlestick.close.toDouble())/(candlestick.close.toDouble())*100

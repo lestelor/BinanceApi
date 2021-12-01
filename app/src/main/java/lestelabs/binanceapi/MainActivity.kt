@@ -121,7 +121,7 @@ class MainActivity : AppCompatActivity(), RetrieveDataInterface {
         binanceKeepAlive = object : Runnable {
             override fun run() {
                 binance.syncClient.keepAliveUserDataStream(listenKey);
-                mainHandler.postDelayed(this, 1000*15)
+                mainHandler.postDelayed(this, binance.keepAlive)
                 Log.d(TAG, "binance keep alive")
             }
         }

@@ -20,6 +20,8 @@ class Binance() {
     val sticks = arrayOf("ADAEUR", "BTCEUR", "ETHEUR", "SOLEUR", "BNBEUR", "IOTXBTC", "DOGEEUR", "SHIBEUR", "LUNABTC", "SANDBTC", "MANABTC" )
     val interval = CandlestickInterval.HOURLY
     val TAG="Binance"
+    val keepAlive: Long = 15*3600*1000
+    val cursorSizeOffset = 3
 
 
     private fun initFactory(): BinanceApiClientFactory {
@@ -37,8 +39,10 @@ class Binance() {
 
 
     fun getCandleStickComplete(symbol: String): MutableList<Candlestick> {
-        var response = syncClient.getCandlestickBars(symbol, interval)
-        var inputIndicators = DoubleArray (response.size)
+        val symbolShort = symbol.substring(0,symbol.length-1-2).toString()
+        val response = syncClient.getCandlestickBars(symbol, interval)
+        val balances = syncClient.account.getAssetBalance(symbolShort)
+        val inputIndicators = DoubleArray (response.size)
         for (i in 0 until response.size) {
             response[i].stick = symbol
             inputIndicators[i] = response[i].close.toDouble()
@@ -49,6 +53,9 @@ class Binance() {
             response[i].sma = sma[i-offset]
             response[i].rsi = rsi[i-offset]
         }
+        response[response.size-1].ownFree = balances.free.toDouble()
+        response[response.size-1].ownLocked = balances.locked.toDouble()
+        response[response.size-1].ownValueEUR = (balances.free.toDouble() + balances.locked.toDouble())*response[response.size-1].close.toDouble()
         return response
     }
 
