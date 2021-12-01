@@ -21,7 +21,7 @@ class Binance() {
     val interval = CandlestickInterval.HOURLY
     val TAG="Binance"
     val keepAlive: Long = 15*3600*1000
-    val cursorSizeOffset = 3
+    val cursorSizeOffset = 5
 
 
     private fun initFactory(): BinanceApiClientFactory {
@@ -56,6 +56,7 @@ class Binance() {
         response[response.size-1].ownFree = balances.free.toDouble()
         response[response.size-1].ownLocked = balances.locked.toDouble()
         response[response.size-1].ownValueEUR = (balances.free.toDouble() + balances.locked.toDouble())*response[response.size-1].close.toDouble()
+        response[response.size-1].maxValue80 = response.maxOf {it ->  it.close.toDouble()} * 0.8
         return response
     }
 

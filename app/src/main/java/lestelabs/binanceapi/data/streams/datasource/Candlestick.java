@@ -44,6 +44,7 @@ public class Candlestick {
   private Double ownFree;
   private Double ownLocked;
   private Double ownValueEUR;
+  private Double maxValue80;
 
 
   public Long getOpenTime() {
@@ -176,7 +177,11 @@ public class Candlestick {
   public void setOwnValueEUR(Double ownValueEUR) {
     this.ownValueEUR = ownValueEUR;
   }
+  public Double getMaxValue80() {return maxValue80;}
 
+  public void setMaxValue80(Double maxValue80) {
+    this.maxValue80 = maxValue80;
+  }
 
   @NonNull
   @Override

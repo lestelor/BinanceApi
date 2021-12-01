@@ -15,9 +15,7 @@ class HomeViewModel : ViewModel() {
         value = "This is home Fragment"
     }
     val text: LiveData<String> = _text
-
     val streams = MutableLiveData<List<Candlestick?>>()
-
     val isLoading = MutableLiveData<Boolean>(false)
     val isLoggedOut = MutableLiveData<Boolean>(false)
 
@@ -38,7 +36,6 @@ class HomeViewModel : ViewModel() {
                         candlesticks = candlesticks.plus(candlestick)
                     }
                 }
-
                 // Set Streams Value
                 if (refresh) {
                     // Set new list
@@ -48,7 +45,6 @@ class HomeViewModel : ViewModel() {
                     val currentStreams = streams.value.orEmpty()
                     val totalStreams = currentStreams.plus(candlesticks)
                     streams.postValue(totalStreams)
-
                 }
 
             } catch (e: UnauthorizedException) {
@@ -59,6 +55,6 @@ class HomeViewModel : ViewModel() {
         }
 
     /// Expose if more streams are available for pagination listener
-    fun areMoreStreamsAvailable(): Boolean = cursor < binance.sticks.size
+    fun areMoreStreamsAvailable(punteroSizeOffset: Int): Boolean = (cursor + punteroSizeOffset) < binance.sticks.size
 
 }

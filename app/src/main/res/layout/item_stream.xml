@@ -11,14 +11,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-
         <LinearLayout
-            android:id="@+id/viewsContainer1"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_medium"
-            android:layout_marginTop="@dimen/margin_medium"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content">
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -28,13 +23,28 @@
                 android:id="@+id/recycler_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="BTCEUR"/>
+                tools:text="BTCEUR"
+                android:layout_gravity="center"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/viewsContainer1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_medium"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:orientation="horizontal">
             <TextView
                 android:id="@+id/recycler_price"
-                android:layout_marginStart="12dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 tools:text="0.3344556"/>
+            <TextView
+                android:id="@+id/recycler_price_max"
+                android:layout_marginStart="12dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="80%max"/>
         </LinearLayout>
         <LinearLayout
             android:id="@+id/viewsContainer2"
@@ -94,6 +104,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 tools:text="%"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Place Order" />
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Cancel order"/>
+
+
         </LinearLayout>
         </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

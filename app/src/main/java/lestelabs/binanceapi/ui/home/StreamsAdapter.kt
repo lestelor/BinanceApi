@@ -34,7 +34,8 @@ class StreamsAdapter : ListAdapter<Candlestick, StreamsAdapter.StreamViewHolder>
 
             // Set Stream Info
             itemView.recycler_name.text = candlestick.stick
-            itemView.recycler_price.text = "price: " + "%.5f".format(candlestick.close.toDouble()) + " EUR"
+            itemView.recycler_price.text = "price: " + "%.5f".format(candlestick.close.toDouble())
+            itemView.recycler_price_max.text = "80% max: " + "%.5f".format(candlestick.maxValue80) + candlestick.stick.takeLast(3)
             itemView.recycler_free.text = "free: " + "%.5f".format(candlestick.ownFree.toDouble())
             itemView.recycler_locked.text = "locked: " + "%.5f".format(candlestick.ownLocked.toDouble())
             itemView.recycler_eur.text = "eur: " + "%.2f".format(candlestick.ownValueEUR)

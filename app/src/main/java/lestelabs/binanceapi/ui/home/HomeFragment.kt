@@ -48,15 +48,11 @@ class HomeFragment : Fragment() {
         initRecyclerView(root)
         //Init refresh
         initRefresh(root)
-
+        // Get Streams
+        homeViewModel.getStreams(true, cursor, cursorSizeOffset)
         return root
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        // Get Streams
-        homeViewModel.getStreams(true, 0, cursorSizeOffset)
-    }
 
     private fun initRecyclerView(view: View) {
 
@@ -72,7 +68,7 @@ class HomeFragment : Fragment() {
                 homeViewModel.getStreams(refresh = false, cursor, cursorSizeOffset)
             }
             override fun isLastPage(): Boolean {
-                return !homeViewModel.areMoreStreamsAvailable()
+                return !homeViewModel.areMoreStreamsAvailable(cursorSizeOffset)
             }
 
             override fun isLoading(): Boolean {
@@ -86,16 +82,14 @@ class HomeFragment : Fragment() {
         homeViewModel.text.observe(viewLifecycleOwner, Observer {
             view.text_home.text = it
         })
-
         // Loading
-        homeViewModel.isLoading.observe(requireActivity()) {
+        homeViewModel.isLoading.observe(viewLifecycleOwner, Observer {
             view.swipeRefreshLayout.isRefreshing = it
-        }
+        })
         // Streams
-        homeViewModel.streams.observe(requireActivity()) {
+        homeViewModel.streams.observe(viewLifecycleOwner, Observer {
             adapter.submitList(it)
-        }
-
+        })
     }
 
     fun initRefresh(view: View) {
