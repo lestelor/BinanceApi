@@ -4,7 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import lestelabs.binanceapi.binance.Binance
 import lestelabs.binanceapi.data.streams.datasource.Candlestick
 import lestelabs.binanceapi.data.network.UnauthorizedException
@@ -29,6 +31,7 @@ class HomeViewModel : ViewModel() {
     /// Gets Streams
     fun getStreams(refresh: Boolean, puntero:Int, punteroSizeOffset: Int){
 
+        viewModelScope.launch(Dispatchers.Main) {
             isLoading.postValue(true)
             // Get Streams
             try {
@@ -36,7 +39,9 @@ class HomeViewModel : ViewModel() {
                 cursor = puntero
                 for (i in cursor .. cursor + punteroSizeOffset -1) {
                     if (i < binance.sticks.size) {
-                        val candlestick = binance.getCandleStickComplete(binance.sticks[i]).lastOrNull()
+                        val candlestick = withContext(Dispatchers.IO)  {
+                            binance.getCandleStickComplete(binance.sticks[i]).lastOrNull()
+                        }
                         candlesticks = candlesticks.plus(candlestick)
                     }
                 }
@@ -58,6 +63,7 @@ class HomeViewModel : ViewModel() {
             // Set Loading to false
             isLoading.postValue(false)
         }
+    }
 
     /// Expose if more streams are available for pagination listener
     fun areMoreStreamsAvailable(punteroSizeOffset: Int): Boolean = (cursor + punteroSizeOffset) < binance.sticks.size

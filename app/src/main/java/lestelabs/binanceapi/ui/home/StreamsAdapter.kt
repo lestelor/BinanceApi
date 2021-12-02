@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -38,25 +40,19 @@ class StreamsAdapter : ListAdapter<Candlestick, StreamsAdapter.StreamViewHolder>
         val candlestick = getItem(position)
         if (candlestick != null ) holder.bindTo(getItem(position))
         holder.itemView.button_cancel_order.setOnClickListener {
-            val binance = Binance()
-            val symbol = binance.sticks[position]
-            val symbolShort = symbol.substring(0,symbol.length-4)
-            val openOrders: List<Order> = binance.syncClient.getOpenOrders(OrderRequest(symbol))
-
-            if (openOrders.isNotEmpty()) {
-                val firstOpenOrder = openOrders[0].orderId
-                binance.syncClient.cancelOrder(CancelOrderRequest(symbol,firstOpenOrder))
-                Toast.makeText(it.context,"Order $firstOpenOrder cancelled. Now reloading ...", Toast.LENGTH_LONG).show()
-                /*val balancesEUR = binance.getBalance("EUR")
-                holder.itemView.text_home.text = "free: " + balancesEUR[0] + " locked: " + balancesEUR[1]
-
-                val balancesStick = binance.getBalance(symbolShort)
-                holder.itemView.recycler_free.text = "free: " + "%5f".format(balancesStick[0])
-                holder.itemView.recycler_locked.text = "locked: " + "%5f".format(balancesStick[1])*/
-                //notifyDataSetChanged()
-            } else Toast.makeText(it.context,"Not found!!", Toast.LENGTH_LONG).show()
+            val balancesStick = HomeFragment().cancelOrderOnClick(holder.itemView, position)
+            if (balancesStick!=null) {
+                candlestick.ownFree = balancesStick[0].toDouble()
+                candlestick.ownLocked = balancesStick[1].toDouble()
+                candlestick.ownValueEUR =
+                    (balancesStick[0].toDouble() + balancesStick[1].toDouble()) * candlestick.close.toDouble()
+                notifyItemChanged(position)
+            }
+        }
 
 
+        holder.itemView.button_open_order.setOnClickListener {
+            HomeFragment().setOrderOnClick(holder.itemView)
         }
     }
 

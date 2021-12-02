@@ -1,14 +1,19 @@
 package lestelabs.binanceapi.binance
 
 import android.util.Log
+import android.view.View
+import android.widget.Toast
+import androidx.fragment.app.FragmentManager
 import lestelabs.binanceapi.MainActivity
 import lestelabs.binanceapi.binance.api.client.*
-import lestelabs.binanceapi.binance.api.client.domain.general.ExchangeInfo
+import lestelabs.binanceapi.binance.api.client.domain.account.Order
+import lestelabs.binanceapi.binance.api.client.domain.account.request.CancelOrderRequest
+import lestelabs.binanceapi.binance.api.client.domain.account.request.OrderRequest
 import lestelabs.binanceapi.binance.api.client.domain.market.CandlestickInterval
 import lestelabs.binanceapi.charts.Indicators
 import lestelabs.binanceapi.data.streams.datasource.Candlestick
+import lestelabs.binanceapi.ui.home.DialogFragment
 import java.lang.Exception
-import kotlin.math.E
 
 class Binance() {
 
@@ -106,7 +111,30 @@ class Binance() {
         }
     }
 
+    fun cancelOrderBinance(view: View, position: Int): List<String>?  {
+        val symbol = sticks[position]
+        val symbolShort = symbol.substring(0,symbol.length-4)
+        val openOrders: List<Order> = syncClient.getOpenOrders(OrderRequest(symbol))
 
+        if (openOrders.isNotEmpty()) {
+            val firstOpenOrder = openOrders[0].orderId
+            syncClient.cancelOrder(CancelOrderRequest(symbol, firstOpenOrder))
+            Toast.makeText(
+                view.context,
+                "Order $firstOpenOrder cancelled. Now reloading ...",
+                Toast.LENGTH_LONG
+            ).show()
+            return getBalance(symbolShort)
+        } else {
+            return null
+            Toast.makeText(view.context,"Not found!!", Toast.LENGTH_LONG).show()
+        }
+    }
+
+/*    fun setOrderBinance(fm:FragmentManager) {
+        val editNameDialogFragment = DialogFragment(requireFragmentManager())
+        fm.let {editNameDialogFragment.show(it, "fragment_edit_name")}
+    }*/
 
 
 }
