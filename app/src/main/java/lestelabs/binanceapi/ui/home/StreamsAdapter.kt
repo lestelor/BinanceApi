@@ -40,7 +40,7 @@ class StreamsAdapter : ListAdapter<Candlestick, StreamsAdapter.StreamViewHolder>
         val candlestick = getItem(position)
         if (candlestick != null ) holder.bindTo(getItem(position))
         holder.itemView.button_cancel_order.setOnClickListener {
-            val balancesStick = HomeFragment().cancelOrderOnClick(holder.itemView, position)
+            val balancesStick = Binance().cancelOrderBinance(holder.itemView, position)
             if (balancesStick!=null) {
                 candlestick.ownFree = balancesStick[0].toDouble()
                 candlestick.ownLocked = balancesStick[1].toDouble()
@@ -52,7 +52,7 @@ class StreamsAdapter : ListAdapter<Candlestick, StreamsAdapter.StreamViewHolder>
 
 
         holder.itemView.button_open_order.setOnClickListener {
-            HomeFragment().setOrderOnClick(holder.itemView)
+            Binance().setOrderBinance(holder.itemView)
         }
     }
 

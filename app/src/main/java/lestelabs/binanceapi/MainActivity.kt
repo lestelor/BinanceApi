@@ -94,6 +94,7 @@ class MainActivity : AppCompatActivity(), RetrieveDataInterface {
         // First, we obtain a listenKey which is required to interact with the user data stream
         val listenKey = binance.syncClient.startUserDataStream()
 
+
         binance.webSocketClient.onUserDataUpdateEvent(listenKey) { response ->
             if (response.eventType === UserDataUpdateEvent.UserDataUpdateEventType.ACCOUNT_POSITION_UPDATE) {
                 val accountUpdateEvent: AccountUpdateEvent = response.outboundAccountPositionUpdateEvent
@@ -117,6 +118,9 @@ class MainActivity : AppCompatActivity(), RetrieveDataInterface {
                 Log.d(TAG, "binance orderTradeUpdateEvent price " + orderTradeUpdateEvent.price)
             }
         }
+
+        // First keep alive
+        binance.syncClient.keepAliveUserDataStream(listenKey);
 
         binanceKeepAlive = object : Runnable {
             override fun run() {

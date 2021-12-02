@@ -1,11 +1,17 @@
 package lestelabs.binanceapi.binance
 
+import android.app.Dialog
 import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.FragmentManager
+import kotlinx.android.synthetic.main.item_place_order.*
+import kotlinx.android.synthetic.main.item_place_order.view.*
 import lestelabs.binanceapi.MainActivity
+import lestelabs.binanceapi.R
 import lestelabs.binanceapi.binance.api.client.*
+import lestelabs.binanceapi.binance.api.client.domain.account.NewOrder.marketBuy
+import lestelabs.binanceapi.binance.api.client.domain.account.NewOrder.marketSell
 import lestelabs.binanceapi.binance.api.client.domain.account.Order
 import lestelabs.binanceapi.binance.api.client.domain.account.request.CancelOrderRequest
 import lestelabs.binanceapi.binance.api.client.domain.account.request.OrderRequest
@@ -14,6 +20,11 @@ import lestelabs.binanceapi.charts.Indicators
 import lestelabs.binanceapi.data.streams.datasource.Candlestick
 import lestelabs.binanceapi.ui.home.DialogFragment
 import java.lang.Exception
+import lestelabs.binanceapi.binance.api.client.domain.account.Trade
+
+import lestelabs.binanceapi.binance.api.client.domain.account.NewOrderResponse
+import lestelabs.binanceapi.binance.api.client.domain.account.NewOrderResponseType
+
 
 class Binance() {
 
@@ -26,7 +37,7 @@ class Binance() {
     val interval = CandlestickInterval.HOURLY
     val TAG="Binance"
     val keepAlive: Long = 15*3600*1000
-    val cursorSizeOffset = 5
+    val cursorSizeOffset = 1
 
 
     private fun initFactory(): BinanceApiClientFactory {
@@ -131,10 +142,46 @@ class Binance() {
         }
     }
 
-/*    fun setOrderBinance(fm:FragmentManager) {
-        val editNameDialogFragment = DialogFragment(requireFragmentManager())
-        fm.let {editNameDialogFragment.show(it, "fragment_edit_name")}
-    }*/
+   fun setOrderBinance(view: View) {
+
+       val dialog = Dialog(view.context)
+       dialog.setCancelable(true)
+
+       dialog.setContentView(R.layout.item_place_order)
+       dialog.show()
+
+       dialog.dialog_button_buy.setOnClickListener() {
+           //val newOrderResponse: NewOrderResponse =
+           //   syncClient.newOrder(marketBuy("ADAEUR", "0.1").newOrderRespType(NewOrderResponseType.FULL))
+
+           // ADAEUR, 100  Buy a quantity of first part of the symbol (100 ADA) and takes from the second part of the symbol (EUR)
+
+           try {
+               val newOrderResponse =
+                   syncClient.newOrder(
+                       marketBuy("ADAEUR", "50").newOrderRespType(
+                           NewOrderResponseType.FULL
+                       )
+                   )
+               val orderId = newOrderResponse.orderId
+               Toast.makeText(view.context, "", Toast.LENGTH_LONG).show()
+           } catch(e:Exception) {
+               Toast.makeText(view.context, e.toString(), Toast.LENGTH_LONG).show()
+           }
+               dialog.hide()
+       }
+       dialog.dialog_button_sell.setOnClickListener {
+
+           // ADAEUR, 100  Sell a quantity of first part of the symbol (100 ADA) and converts to second part of the symbol (EUR)
+           val newOrderResponse =
+               syncClient.newOrder(marketSell("ADAEUR", "100").newOrderRespType(NewOrderResponseType.FULL))
+
+           val orderId = newOrderResponse.orderId
+           Toast.makeText(view.context,"", Toast.LENGTH_LONG).show()
+           dialog.hide()
+       }
+
+    }
 
 
 }
