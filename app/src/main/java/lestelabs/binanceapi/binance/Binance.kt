@@ -3,6 +3,8 @@ package lestelabs.binanceapi.binance
 import android.app.Dialog
 import android.util.Log
 import android.view.View
+import android.view.View.OnFocusChangeListener
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.FragmentManager
 import kotlinx.android.synthetic.main.item_place_order.*
@@ -24,6 +26,21 @@ import lestelabs.binanceapi.binance.api.client.domain.account.Trade
 
 import lestelabs.binanceapi.binance.api.client.domain.account.NewOrderResponse
 import lestelabs.binanceapi.binance.api.client.domain.account.NewOrderResponseType
+import lestelabs.binanceapi.binance.api.client.domain.TimeInForce
+
+import lestelabs.binanceapi.binance.api.client.domain.OrderType
+
+import lestelabs.binanceapi.binance.api.client.domain.OrderSide
+
+import lestelabs.binanceapi.binance.api.client.domain.account.NewOrder
+
+
+import android.widget.TextView
+import kotlinx.android.synthetic.main.fragment_dashboard.view.*
+import android.widget.AdapterView
+
+
+
 
 
 class Binance() {
@@ -142,45 +159,82 @@ class Binance() {
         }
     }
 
-   fun setOrderBinance(view: View) {
+   fun setOrderBinance(view: View, position: Int) {
+
+       val symbol1 = sticks[position].take(sticks[position].length - 3)
+       val symbol2 = sticks[position].takeLast(3)
 
        val dialog = Dialog(view.context)
        dialog.setCancelable(true)
-
        dialog.setContentView(R.layout.item_place_order)
-       dialog.show()
 
-       dialog.dialog_button_buy.setOnClickListener() {
-           //val newOrderResponse: NewOrderResponse =
-           //   syncClient.newOrder(marketBuy("ADAEUR", "0.1").newOrderRespType(NewOrderResponseType.FULL))
 
-           // ADAEUR, 100  Buy a quantity of first part of the symbol (100 ADA) and takes from the second part of the symbol (EUR)
+       dialog.dialog_symbol1.text = symbol1
+       when(symbol2) {
+           "EUR" -> dialog.dialog_spinner2.setSelection(0)
+           "BTC" -> dialog.dialog_spinner2.setSelection(1)
+       }
 
-           try {
-               val newOrderResponse =
-                   syncClient.newOrder(
-                       marketBuy("ADAEUR", "50").newOrderRespType(
-                           NewOrderResponseType.FULL
-                       )
-                   )
-               val orderId = newOrderResponse.orderId
-               Toast.makeText(view.context, "", Toast.LENGTH_LONG).show()
-           } catch(e:Exception) {
-               Toast.makeText(view.context, e.toString(), Toast.LENGTH_LONG).show()
+       dialog.dialog_available1.text = "%.5f".format(getBalance(symbol1)[0].toDouble())
+       dialog.dialog_available2.text = "%.5f".format(getBalance(symbol2)[0].toDouble())
+
+
+       val values: Array<String> = arrayOf("EUR", "BTC")
+       val adapter = ArrayAdapter(view.context, android.R.layout.simple_spinner_dropdown_item, values)
+       dialog.dialog_spinner2.adapter = adapter
+       dialog.dialog_spinner2.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+           override fun onItemSelected(
+               adapterView: AdapterView<*>, view: View?,
+               position: Int, id: Long
+           ) {
+                dialog.dialog_available2.text =
+               getBalance(dialog.dialog_spinner2.selectedItem.toString())[0]
            }
-               dialog.hide()
+           override fun onNothingSelected(p0: AdapterView<*>?) {
+           }
+       }
+
+       // buttons buy/sell #symbol at a limit price (EUR/BTC)
+       dialog.dialog_button_buy.setOnClickListener() {
+           val symbol = dialog.dialog_symbol1.text.toString() + dialog.dialog_spinner2.selectedItem
+           Log.d(TAG,"Binance dialog symbol $symbol")
+           val price = dialog.dialog_price.text.toString()
+           val quantity = dialog.dialog_buy_sell_quantity.text.toString()
+           val type = OrderSide.BUY
+           val orderId = executeOrder(view, type, symbol, quantity, price)
+            dialog.hide()
        }
        dialog.dialog_button_sell.setOnClickListener {
-
-           // ADAEUR, 100  Sell a quantity of first part of the symbol (100 ADA) and converts to second part of the symbol (EUR)
-           val newOrderResponse =
-               syncClient.newOrder(marketSell("ADAEUR", "100").newOrderRespType(NewOrderResponseType.FULL))
-
-           val orderId = newOrderResponse.orderId
-           Toast.makeText(view.context,"", Toast.LENGTH_LONG).show()
+           val symbol = dialog.dialog_symbol1.text.toString() + dialog.dialog_spinner2.selectedItem
+           Log.d(TAG,"Binance dialog symbol $symbol")
+           val price = dialog.dialog_price.text.toString()
+           val quantity = dialog.dialog_buy_sell_quantity.text.toString()
+           val type = OrderSide.SELL
+           val orderId = executeOrder(view, type, symbol, quantity, price)
            dialog.hide()
        }
+       dialog.show()
+    }
 
+    private fun executeOrder(view: View, type:OrderSide, symbol: String, quantity:String, price: String ) {
+        try {
+            val order = NewOrder(
+                symbol,
+                type,
+                OrderType.LIMIT,
+                TimeInForce.GTC,
+                quantity,
+                price
+            )
+            val newOrderResponse =
+                syncClient.newOrder(
+                    order.newOrderRespType(NewOrderResponseType.FULL)
+                )
+            val orderId = newOrderResponse.orderId
+            Toast.makeText(view.context, "Order $orderId executed", Toast.LENGTH_LONG).show()
+        } catch(e:Exception) {
+            Toast.makeText(view.context, e.toString(), Toast.LENGTH_LONG).show()
+        }
     }
 
 

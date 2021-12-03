@@ -4,6 +4,8 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -11,7 +13,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_after_notification.view.*
+import kotlinx.android.synthetic.main.fragment_dashboard.view.*
 import kotlinx.android.synthetic.main.fragment_home.view.*
+import kotlinx.android.synthetic.main.item_place_order.view.*
 import kotlinx.android.synthetic.main.item_stream.view.*
 import lestelabs.binanceapi.R
 import lestelabs.binanceapi.binance.Binance
@@ -39,6 +43,10 @@ class StreamsAdapter : ListAdapter<Candlestick, StreamsAdapter.StreamViewHolder>
     override fun onBindViewHolder(holder: StreamViewHolder, position: Int) {
         val candlestick = getItem(position)
         if (candlestick != null ) holder.bindTo(getItem(position))
+
+
+
+
         holder.itemView.button_cancel_order.setOnClickListener {
             val balancesStick = Binance().cancelOrderBinance(holder.itemView, position)
             if (balancesStick!=null) {
@@ -52,7 +60,7 @@ class StreamsAdapter : ListAdapter<Candlestick, StreamsAdapter.StreamViewHolder>
 
 
         holder.itemView.button_open_order.setOnClickListener {
-            Binance().setOrderBinance(holder.itemView)
+            Binance().setOrderBinance(holder.itemView, position)
         }
     }
 

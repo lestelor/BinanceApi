@@ -1,26 +1,17 @@
 package lestelabs.binanceapi.ui.home
 
-import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.fragment_home.view.*
-import kotlinx.android.synthetic.main.item_stream.view.*
 import lestelabs.binanceapi.binance.Binance
 import lestelabs.binanceapi.databinding.FragmentHomeBinding
-import android.app.Dialog
-import kotlinx.android.synthetic.main.item_place_order.*
-import kotlinx.android.synthetic.main.item_place_order.view.*
-import lestelabs.binanceapi.R
 
 
 class HomeFragment : Fragment() {

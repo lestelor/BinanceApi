@@ -24,27 +24,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="6dp"
                 android:text="available1"/>
-            <EditText
-                android:id="@+id/dialog_sell_quantity1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="6dp"
-                android:text="sell quantity1"/>
-            <Button
-                android:id="@+id/dialog_button_sell"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="6dp"
-                android:text="Sell"/>
-
-        </androidx.appcompat.widget.LinearLayoutCompat>
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginStart="12dp">
             <Spinner
-                android:id="@+id/dialog_symbol2"
+                android:id="@+id/dialog_spinner2"
                 android:layout_width="wrap_content"
                 android:layout_height="19dp"
                 android:layout_marginLeft="6dp" />
@@ -54,17 +35,37 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="6dp"
                 android:text="available2"/>
+        </androidx.appcompat.widget.LinearLayoutCompat>
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginStart="12dp">
+
             <EditText
-                android:id="@+id/dialog_buy_quantity2"
+                android:id="@+id/dialog_buy_sell_quantity"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="buy quantity"/>
+                android:layout_marginLeft="6dp"
+                android:hint="buy/sell quantity"/>
+            <EditText
+                android:id="@+id/dialog_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="6dp"
+                android:hint="price"/>
             <Button
                 android:id="@+id/dialog_button_buy"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="6dp"
                 android:text="Buy"/>
+            <Button
+                android:id="@+id/dialog_button_sell"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="6dp"
+                android:text="Sell"/>
         </androidx.appcompat.widget.LinearLayoutCompat>
 
 
