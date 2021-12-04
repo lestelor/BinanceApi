@@ -43,10 +43,11 @@ class HomeViewModel : ViewModel() {
                             binance.getCandleStickComplete(binance.sticks[i]).lastOrNull()
                         }
                         candlesticks = candlesticks.plus(candlestick)
+                        streams.postValue(candlesticks)
                     }
                 }
                 // Set Streams Value
-                if (refresh) {
+/*                if (refresh) {
                     // Set new list
                     cursor = 0
                     streams.postValue(candlesticks)
@@ -55,7 +56,7 @@ class HomeViewModel : ViewModel() {
                     val currentStreams = streams.value.orEmpty()
                     val totalStreams = currentStreams.plus(candlesticks)
                     streams.postValue(totalStreams)
-                }
+                }*/
 
             } catch (e: UnauthorizedException) {
                 isLoggedOut.postValue(true)

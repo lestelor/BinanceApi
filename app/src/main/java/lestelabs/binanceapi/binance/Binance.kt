@@ -53,8 +53,8 @@ class Binance() {
     val sticks = arrayOf("ADAEUR", "BTCEUR", "ETHEUR", "SOLEUR", "BNBEUR", "IOTXBTC", "DOGEEUR", "SHIBEUR", "LUNABTC", "SANDBTC", "MANABTC" )
     val interval = CandlestickInterval.HOURLY
     val TAG="Binance"
-    val keepAlive: Long = 15*3600*1000
-    val cursorSizeOffset = 1
+    val keepAlive: Long = 15*60*1000
+    val cursorSizeOffset = 4
 
 
     private fun initFactory(): BinanceApiClientFactory {
@@ -160,6 +160,7 @@ class Binance() {
     }
 
    fun setOrderBinance(view: View, position: Int) {
+
 
        val symbol1 = sticks[position].take(sticks[position].length - 3)
        val symbol2 = sticks[position].takeLast(3)
