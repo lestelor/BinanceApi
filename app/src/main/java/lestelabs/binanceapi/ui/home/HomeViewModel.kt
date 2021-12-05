@@ -1,5 +1,14 @@
 package lestelabs.binanceapi.ui.home
 
+import android.app.Activity
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
+import android.graphics.BitmapFactory
+import android.graphics.Color
+import android.os.Build
+import android.widget.RemoteViews
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -7,6 +16,8 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import lestelabs.binanceapi.MainActivity
+import lestelabs.binanceapi.R
 import lestelabs.binanceapi.binance.Binance
 import lestelabs.binanceapi.data.streams.datasource.Candlestick
 import lestelabs.binanceapi.data.network.UnauthorizedException
@@ -15,6 +26,7 @@ class HomeViewModel : ViewModel() {
 
     private var cursor: Int = 0
     val binance = Binance()
+
 
     private val _text = MutableLiveData<String>().apply {
         val balances = binance.getBalance("EUR")
@@ -29,7 +41,7 @@ class HomeViewModel : ViewModel() {
 
 
     /// Gets Streams
-    fun getStreams(refresh: Boolean, puntero:Int, punteroSizeOffset: Int){
+    fun getStreams(refresh: Boolean, puntero:Int, punteroSizeOffset: Int) {
 
         viewModelScope.launch(Dispatchers.Main) {
             isLoading.postValue(true)
@@ -46,6 +58,7 @@ class HomeViewModel : ViewModel() {
                         streams.postValue(candlesticks)
                     }
                 }
+                //send_notification(context)
                 // Set Streams Value
 /*                if (refresh) {
                     // Set new list

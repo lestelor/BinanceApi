@@ -4,27 +4,15 @@
     android:id="@+id/layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="8dp">
-    <Button
-        android:id="@+id/button"
-        android:layout_width="0dp"
-        android:layout_weight="1"
+    android:padding="8dp"
+    android:orientation="vertical">
+    <TextView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Button"/>
-
-    <Button
-        android:layout_weight="1"
-        android:id="@+id/button2"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Button"
-
-        />
+        android:text="BINANCE API"/>
     <TextView
         android:id="@+id/tvNotification"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text=""/>
 </LinearLayout>

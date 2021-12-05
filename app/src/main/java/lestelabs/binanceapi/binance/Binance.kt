@@ -52,6 +52,11 @@ class Binance() {
     val offset = 50
     val sticks = arrayOf("ADAEUR", "BTCEUR", "ETHEUR", "SOLEUR", "BNBEUR", "IOTXBTC", "DOGEEUR", "SHIBEUR", "LUNABTC", "SANDBTC", "MANABTC" )
     val interval = CandlestickInterval.HOURLY
+/*    val intervalms: Long = when(interval.intervalId) {
+        "1h" -> 60*60*1000
+        else -> {60*60*1000}
+    }*/
+    val intervalms: Long = 30*1000
     val TAG="Binance"
     val keepAlive: Long = 15*60*1000
     val cursorSizeOffset = 4

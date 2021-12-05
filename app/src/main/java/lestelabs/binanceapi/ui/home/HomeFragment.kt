@@ -17,11 +17,18 @@ import lestelabs.binanceapi.MainActivity
 import lestelabs.binanceapi.binance.Binance
 import lestelabs.binanceapi.databinding.FragmentHomeBinding
 import android.R
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
+import android.graphics.BitmapFactory
+import android.graphics.Color
+import android.os.Build
+import android.widget.RemoteViews
 
 import android.widget.TextView
-
-
-
+import androidx.core.content.ContextCompat.getSystemService
+import lestelabs.binanceapi.data.streams.datasource.Candlestick
 
 
 class HomeFragment : Fragment() {
@@ -38,8 +45,16 @@ class HomeFragment : Fragment() {
     private var cursorSizeOffset = Binance().cursorSizeOffset
     private val TAG = "HomeFragment"
     lateinit var mainHandler: Handler
-    lateinit var binanceKeepAlive: Runnable
+    private lateinit var repeatIndefinetly: Runnable
     private var binance = Binance()
+
+    // declaring notification variables
+    lateinit var notificationManager: NotificationManager
+    lateinit var notificationChannel: NotificationChannel
+    lateinit var builder: Notification.Builder
+    private val channelId = "i.apps.notifications"
+    private val description = "Test notification"
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -60,11 +75,12 @@ class HomeFragment : Fragment() {
         initRefresh(root)
         // Init the repetition of getStreams every delta time
         init_repeat_indefinetly()
+        // Init the notification alerts
+        init_notification(root.context)
 
-
-        // Get Streams
+        // Get Streams (not needed, it is done as first repeat)
         //homeViewModel.getStreams(true, cursor, cursorSizeOffset)
-        //homeViewModel.getStreams(true, cursor, Binance().sticks.size-1)
+        //homeViewModel.getStreams(true, cursor, Binance().sticks.size)
         return root
     }
 
@@ -106,6 +122,11 @@ class HomeFragment : Fragment() {
         // Streams
         homeViewModel.streams.observe(viewLifecycleOwner, Observer {
             adapter.submitList(it)
+            if (cursor == binance.sticks.size-1) {
+                checkIfSendBuySellNotification(view.context, it)
+                cursor = 0
+            } else  cursor +=1
+
         })
     }
 
@@ -119,19 +140,87 @@ class HomeFragment : Fragment() {
     }
 
     fun init_repeat_indefinetly() {
-        val deltaTime = binance.interval.intervalId
-        Log.d(TAG, "repeatIndefinetly $deltaTime")
         mainHandler = Handler(Looper.getMainLooper())
-        binanceKeepAlive = object : Runnable {
+        repeatIndefinetly = object : Runnable {
             override fun run() {
-                homeViewModel.getStreams(true, cursor, Binance().sticks.size-1)
+                homeViewModel.getStreams( true, cursor, Binance().sticks.size)
+                //homeViewModel.getStreams( true, cursor, 2)
                 //mainHandler.postDelayed(this, binance.keepAlive)
                 //mainHandler.postDelayed(this, deltaTime)
-                mainHandler.postDelayed(this, 1*60*1000)
+                mainHandler.postDelayed(this, binance.intervalms)
                 Log.d(MainActivity.TAG, "repeatIndefinetly done")
             }
         }
-        mainHandler.post(binanceKeepAlive)
+        mainHandler.post(repeatIndefinetly)
+    }
+
+    fun init_notification(context: Context) {
+        notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    }
+
+    private fun checkIfSendBuySellNotification(context: Context, candlesticks: List<Candlestick?>) {
+        send_notification(context, "Hola")
+        for (i in candlesticks.indices) {
+            val rsi = candlesticks[i]?.rsi
+            val value = candlesticks[i]?.close?.toDouble()
+            val sma = candlesticks[i]?.sma?.toDouble()
+            val symbol = candlesticks[i]?.stick
+            val price = candlesticks[i]?.maxValue80
+            if (rsi != null && sma !=null && value !=null) {
+                if (rsi < 35.0 && sma > value) {
+                    send_notification(context, "Buy $symbol rsi: $rsi sma: $sma" )
+                } else if(rsi > 65.0 && sma<value) {
+                    send_notification(context, "Sell $symbol at a $price rsi: $rsi sma: $sma" )
+                }
+            }
+        }
+    }
+
+    fun send_notification(context: Context, text:String) {
+        // pendingIntent is an intent for future use i.e after
+        // the notification is clicked, this intent will come into action
+
+        //val intent = Intent(this, afterNotification::class.java)
+
+        // FLAG_UPDATE_CURRENT specifies that if a previous
+        // PendingIntent already exists, then the current one
+        // will update it with the latest intent
+        // 0 is the request code, using it later with the
+        // same method again will get back the same pending
+        // intent for future reference
+        // intent passed here is to our afterNotification class
+        //val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+
+        // RemoteViews are used to use the content of
+        // some different layout apart from the current activity layout
+        val contentView = RemoteViews(context.packageName, lestelabs.binanceapi.R.layout.activity_after_notification)
+        contentView.setTextViewText(lestelabs.binanceapi.R.id.tvNotification, text)
+
+        // checking if android version is greater than oreo(API 26) or not
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            notificationChannel = NotificationChannel(channelId, description, NotificationManager.IMPORTANCE_HIGH)
+            notificationChannel.enableLights(true)
+            notificationChannel.lightColor = Color.GREEN
+            notificationChannel.enableVibration(false)
+            notificationManager.createNotificationChannel(notificationChannel)
+
+
+
+            builder = Notification.Builder(context, channelId)
+                .setContent(contentView)
+                .setSmallIcon(lestelabs.binanceapi.R.drawable.ic_launcher_background)
+                .setLargeIcon(BitmapFactory.decodeResource(this.resources, lestelabs.binanceapi.R.drawable.ic_launcher_background))
+            //.setContentIntent(pendingIntent)
+        } else {
+
+            builder = Notification.Builder(context)
+                .setContent(contentView)
+                .setSmallIcon(lestelabs.binanceapi.R.drawable.ic_launcher_background)
+                .setLargeIcon(BitmapFactory.decodeResource(this.resources, lestelabs.binanceapi.R.drawable.ic_launcher_background))
+            //.setContentIntent(pendingIntent)
+        }
+        notificationManager.notify((0..123456).random(), builder.build())
+
     }
 
     override fun onDestroyView() {

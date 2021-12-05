@@ -42,6 +42,7 @@ class MainActivity : AppCompatActivity(), RetrieveDataInterface {
     private val description = "Test notification"
 
 
+
     private lateinit var binance: Binance
     lateinit var mainHandler: Handler
     lateinit var binanceKeepAlive: Runnable
@@ -97,7 +98,8 @@ class MainActivity : AppCompatActivity(), RetrieveDataInterface {
 
         binance.webSocketClient.onUserDataUpdateEvent(listenKey) { response ->
             if (response.eventType === UserDataUpdateEvent.UserDataUpdateEventType.ACCOUNT_POSITION_UPDATE) {
-                val accountUpdateEvent: AccountUpdateEvent = response.outboundAccountPositionUpdateEvent
+                val accountUpdateEvent: AccountUpdateEvent =
+                    response.outboundAccountPositionUpdateEvent
 
                 // Print new balances of every available asset
                 println(accountUpdateEvent.balances)
@@ -105,14 +107,16 @@ class MainActivity : AppCompatActivity(), RetrieveDataInterface {
                 val orderTradeUpdateEvent: OrderTradeUpdateEvent =
                     response.orderTradeUpdateEvent
 
-
                 send_notification()
 
                 // Print details about an order/trade
                 Log.d(TAG, "binance orderTradeUpdateEvent $orderTradeUpdateEvent")
 
                 // Print original quantity
-                Log.d(TAG, "binance orderTradeUpdateEvent quantity " + orderTradeUpdateEvent.originalQuantity)
+                Log.d(
+                    TAG,
+                    "binance orderTradeUpdateEvent quantity " + orderTradeUpdateEvent.originalQuantity
+                )
 
                 // Or price
                 Log.d(TAG, "binance orderTradeUpdateEvent price " + orderTradeUpdateEvent.price)
@@ -144,7 +148,6 @@ class MainActivity : AppCompatActivity(), RetrieveDataInterface {
             Log.d(TAG, "binance websocket aggtradeevents $response")
             }
         })*/
-
 
     }
 
@@ -196,7 +199,10 @@ class MainActivity : AppCompatActivity(), RetrieveDataInterface {
     }
 
 
-    override fun onPause() {
+
+
+
+override fun onPause() {
         super.onPause()
         mainHandler.removeCallbacks(binanceKeepAlive)
     }
