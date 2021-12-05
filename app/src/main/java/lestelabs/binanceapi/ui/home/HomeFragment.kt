@@ -40,13 +40,14 @@ class HomeFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
+    private var binance = Binance()
     private val adapter = StreamsAdapter()
     private var cursor = 0
-    private var cursorSizeOffset = Binance().cursorSizeOffset
+    private var cursorSizeOffset = binance.cursorSizeOffset
     private val TAG = "HomeFragment"
     lateinit var mainHandler: Handler
     private lateinit var repeatIndefinetly: Runnable
-    private var binance = Binance()
+
 
     // declaring notification variables
     lateinit var notificationManager: NotificationManager
@@ -122,7 +123,7 @@ class HomeFragment : Fragment() {
         // Streams
         homeViewModel.streams.observe(viewLifecycleOwner, Observer {
             adapter.submitList(it)
-            if (cursor == binance.sticks.size-1) {
+            if (cursor == cursorSizeOffset-1) {
                 checkIfSendBuySellNotification(view.context, it)
                 cursor = 0
             } else  cursor +=1
@@ -135,7 +136,7 @@ class HomeFragment : Fragment() {
         view.swipeRefreshLayout.setOnRefreshListener {
             cursor = 0
             //homeViewModel.getStreams(refresh = true, cursor, cursorSizeOffset)
-            homeViewModel.getStreams(true, cursor, Binance().sticks.size-1)
+            homeViewModel.getStreams(true, cursor, binance.cursorSizeOffset)
         }
     }
 
@@ -143,7 +144,7 @@ class HomeFragment : Fragment() {
         mainHandler = Handler(Looper.getMainLooper())
         repeatIndefinetly = object : Runnable {
             override fun run() {
-                homeViewModel.getStreams( true, cursor, Binance().sticks.size)
+                homeViewModel.getStreams( true, cursor, cursorSizeOffset)
                 //homeViewModel.getStreams( true, cursor, 2)
                 //mainHandler.postDelayed(this, binance.keepAlive)
                 //mainHandler.postDelayed(this, deltaTime)
