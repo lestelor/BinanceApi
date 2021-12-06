@@ -43,24 +43,25 @@ import android.widget.AdapterView
 
 
 
-class Binance() {
+class Binance {
 
     val factory: BinanceApiClientFactory = initFactory()
     val syncClient: BinanceApiRestClient = initRestClient(factory)
     val asyncClient: BinanceApiAsyncRestClient = initAsyncClient(factory)
     val webSocketClient: BinanceApiWebSocketClient = initWebSocketClient()
     val offset = 50
-    val sticks = arrayOf("ADAEUR", "BTCEUR", "ETHEUR", "SOLEUR", "BNBEUR", "IOTXBTC", "DOGEEUR", "SHIBEUR", "LUNABTC", "SANDBTC", "MANABTC" )
+    val sticks = arrayOf("ADAEUR", "BTCEUR", "ETHEUR", "SOLEUR", "BNBEUR", "IOTXBTC", "DOGEEUR", "SHIBEUR", "LUNABTC", "SANDBTC", "MANABTC", "XRPEUR", "MATICEUR" )
     val interval = CandlestickInterval.HOURLY
-/*    val intervalms: Long = when(interval.intervalId) {
+    val intervalms: Long = when(interval.intervalId) {
         "1h" -> 60*60*1000
-        else -> {60*60*1000}
-    }*/
-    val intervalms: Long = 30*1000
+        else -> 60*60*1000
+    }
+
+    //val intervalms: Long = 30*1000
     val TAG="Binance"
     val keepAlive: Long = 15*60*1000
     // Number of candlesticks to be shown
-    val cursorSizeOffset = 2
+    val cursorSizeOffset = sticks.size
 
 
     private fun initFactory(): BinanceApiClientFactory {

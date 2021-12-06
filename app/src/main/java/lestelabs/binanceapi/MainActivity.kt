@@ -22,6 +22,16 @@ import lestelabs.binanceapi.binance.api.client.domain.event.AccountUpdateEvent
 import lestelabs.binanceapi.binance.api.client.domain.event.OrderTradeUpdateEvent
 import lestelabs.binanceapi.binance.api.client.domain.event.UserDataUpdateEvent
 import lestelabs.binanceapi.databinding.ActivityMainBinding
+import lestelabs.binanceapi.foreground.AutoStartService
+
+import android.content.Intent
+import android.app.ActivityManager
+
+
+
+
+
+
 
 
 interface RetrieveDataInterface {
@@ -46,6 +56,9 @@ class MainActivity : AppCompatActivity(), RetrieveDataInterface {
     private lateinit var binance: Binance
     lateinit var mainHandler: Handler
     lateinit var binanceKeepAlive: Runnable
+
+    private lateinit var mAutoStartService: AutoStartService
+    private lateinit var mServiceIntent: Intent
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,6 +88,7 @@ class MainActivity : AppCompatActivity(), RetrieveDataInterface {
         init_binance()
         init_notification()
         init_listener_user_binance_updates()
+        //init_broadcast_service()
 
     }
 
@@ -198,11 +212,31 @@ class MainActivity : AppCompatActivity(), RetrieveDataInterface {
 
     }
 
+    fun init_broadcast_service() {
+        mAutoStartService = AutoStartService()
+        mServiceIntent = Intent(this, AutoStartService::class.java)
+
+        if (!isMyServiceRunning(AutoStartService::class.java)) {
+            startService(mServiceIntent)
+        }
+    }
+
+
+    private fun isMyServiceRunning(serviceClass: Class<*>): Boolean {
+        val manager = getSystemService(ACTIVITY_SERVICE) as ActivityManager
+        for (service in manager.getRunningServices(Int.MAX_VALUE)) {
+            if (serviceClass.name == service.service.className) {
+                Log.i("isMyServiceRunning?", true.toString() + "")
+                return true
+            }
+        }
+        Log.i("isMyServiceRunning?", false.toString() + "")
+        return false
+    }
 
 
 
-
-override fun onPause() {
+    override fun onPause() {
         super.onPause()
         mainHandler.removeCallbacks(binanceKeepAlive)
     }
@@ -210,6 +244,11 @@ override fun onPause() {
     override fun onResume() {
         super.onResume()
         mainHandler.post(binanceKeepAlive)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        stopService(mServiceIntent)
     }
 
     companion object {
