@@ -26,12 +26,9 @@ import lestelabs.binanceapi.foreground.AutoStartService
 
 import android.content.Intent
 import android.app.ActivityManager
-
-
-
-
-
-
+import android.os.Build
+import lestelabs.binanceapi.foreground.JobService
+import lestelabs.binanceapi.foreground.RestartBroadcastReceiver
 
 
 interface RetrieveDataInterface {
@@ -88,7 +85,7 @@ class MainActivity : AppCompatActivity(), RetrieveDataInterface {
         init_binance()
         init_notification()
         init_listener_user_binance_updates()
-        //init_broadcast_service()
+        init_broadcast_service()
 
     }
 
@@ -244,6 +241,12 @@ class MainActivity : AppCompatActivity(), RetrieveDataInterface {
     override fun onResume() {
         super.onResume()
         mainHandler.post(binanceKeepAlive)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            RestartBroadcastReceiver().scheduleJob(applicationContext)
+        } else {
+            val bck = ProcessMainClass()
+            bck.launchService(applicationContext as JobService)
+        }
     }
 
     override fun onDestroy() {

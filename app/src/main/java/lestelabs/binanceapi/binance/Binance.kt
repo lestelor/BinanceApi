@@ -38,9 +38,8 @@ import lestelabs.binanceapi.binance.api.client.domain.account.NewOrder
 import android.widget.TextView
 import kotlinx.android.synthetic.main.fragment_dashboard.view.*
 import android.widget.AdapterView
-
-
-
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 
 class Binance {
@@ -53,11 +52,11 @@ class Binance {
     val sticks = arrayOf("ADAEUR", "BTCEUR", "ETHEUR", "SOLEUR", "BNBEUR", "IOTXBTC", "DOGEEUR", "SHIBEUR", "LUNABTC", "SANDBTC", "MANABTC", "XRPEUR", "MATICEUR" )
     val interval = CandlestickInterval.HOURLY
     val intervalms: Long = when(interval.intervalId) {
-        "1h" -> 60*60*1000
+        "1h" -> 60*60*1000/2
         else -> 60*60*1000
     }
 
-    //val intervalms: Long = 30*1000
+    //val intervalms: Long = 60*1000
     val TAG="Binance"
     val keepAlive: Long = 15*60*1000
     // Number of candlesticks to be shown
@@ -243,6 +242,17 @@ class Binance {
         } catch(e:Exception) {
             Toast.makeText(view.context, e.toString(), Toast.LENGTH_LONG).show()
         }
+    }
+
+    suspend fun getCandlesticks(): List<Candlestick> {
+        var candlesticks: List<Candlestick> = listOf()
+        for (i in 0 .. sticks.size -1) {
+            val candlestick = withContext(Dispatchers.IO)  {
+                getCandleStickComplete(sticks[i]).lastOrNull()
+            }
+            candlestick?.let{ candlesticks = candlesticks.plus(candlestick)}
+        }
+        return candlesticks
     }
 
 

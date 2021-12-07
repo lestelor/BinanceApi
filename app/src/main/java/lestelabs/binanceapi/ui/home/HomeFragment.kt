@@ -54,8 +54,6 @@ class HomeFragment : Fragment() {
     lateinit var notificationChannel: NotificationChannel
     lateinit var builder: Notification.Builder
     lateinit var contentView:RemoteViews
-
-    // declaring notification variables
     private val channelId = "i.apps.notifications"
     private val description = "Test notification"
 

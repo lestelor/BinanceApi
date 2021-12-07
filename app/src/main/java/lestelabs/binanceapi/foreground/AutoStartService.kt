@@ -1,11 +1,14 @@
 package lestelabs.binanceapi.foreground
 
+import android.R
 import android.app.Service
 import android.content.Intent
+import android.os.Build
 
 import android.os.IBinder
 import android.util.Log
 import androidx.annotation.Nullable
+import androidx.annotation.RequiresApi
 import java.util.*
 
 
@@ -45,6 +48,7 @@ class AutoStartService: Service() {
 
     private fun initialiseTimerTask() {
         timerTask = object : TimerTask() {
+            @RequiresApi(Build.VERSION_CODES.O)
             override fun run() {
                 Log.i(TAG, "Timer is running " + counter++)
             }
