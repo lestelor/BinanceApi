@@ -179,7 +179,7 @@ open class Service: android.app.Service() {
                 GlobalScope.launch(Dispatchers.Main) {
                     candlesticks = binance.getCandlesticks()
                 }
-                notifications.checkIfSendBuySellNotification(notifications, candlesticks)
+                notifications.checkIfSendBuySellNotification(candlesticks)
             //
             }
         }

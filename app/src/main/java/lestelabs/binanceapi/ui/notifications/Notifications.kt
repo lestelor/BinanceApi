@@ -9,6 +9,7 @@ import android.graphics.Color
 import android.os.Build
 import android.widget.RemoteViews
 import lestelabs.binanceapi.R
+import lestelabs.binanceapi.binance.Binance
 import lestelabs.binanceapi.data.streams.datasource.Candlestick
 import java.sql.Time
 import java.util.*
@@ -64,8 +65,8 @@ class Notifications(context: Context) {
         notificationManager.notify((0..123456).random(), builder.build())
     }
 
-    fun checkIfSendBuySellNotification(notifications: Notifications, candlesticks: List<Candlestick?>) {
-        notifications.sendNotification("Hola caracola " + Date().hours + ":" + Date().minutes)
+    fun checkIfSendBuySellNotification(candlesticks: List<Candlestick?>) {
+        sendNotification("Hola caracola " + Date().hours + ":" + Date().minutes)
         for (i in candlesticks.indices) {
             val rsi = candlesticks[i]?.rsi
             val value = candlesticks[i]?.close?.toDouble()
@@ -73,10 +74,10 @@ class Notifications(context: Context) {
             val symbol = candlesticks[i]?.stick
             val price = candlesticks[i]?.maxValue80
             if (rsi != null && sma !=null && value !=null) {
-                if (rsi < 35.0 && sma > value) {
-                    notifications.sendNotification("Buy $symbol rsi: $rsi sma: $sma")
-                } else if(rsi > 65.0 && sma<value) {
-                    notifications.sendNotification("Sell $symbol at a $price rsi: $rsi sma: $sma")
+                if (rsi < Binance().rsiLowerLinit && sma > value) {
+                    sendNotification("Buy $symbol rsi: $rsi sma: $sma")
+                } else if(rsi > Binance().rsiUpperLimit && sma<value) {
+                    sendNotification("Sell $symbol at a $price rsi: $rsi sma: $sma")
                 }
             }
         }

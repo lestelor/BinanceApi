@@ -56,6 +56,8 @@ class Binance {
         else -> 60*60*1000
     }
 
+    val rsiLowerLinit = 40.0
+    val rsiUpperLimit = 60.0
     //val intervalms: Long = 60*1000
     val TAG="Binance"
     val keepAlive: Long = 15*60*1000
