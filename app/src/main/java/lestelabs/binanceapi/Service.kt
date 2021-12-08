@@ -182,7 +182,7 @@ open class Service: android.app.Service() {
                 //notifications.sendNotification("in timer $counter")
                 if (counter*60000 % binance.intervalms  == zeroLong) {
                     Log.i("in timer", "timer send notification")
-                    GlobalScope.launch(Dispatchers.Main) {
+                    GlobalScope.launch(Dispatchers.IO) {
                         candlesticks = binance.getCandlesticks()
                         notifications.checkIfSendBuySellNotification(candlesticks)
                     }

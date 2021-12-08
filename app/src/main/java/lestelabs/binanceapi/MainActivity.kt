@@ -262,7 +262,7 @@ class MainActivity : AppCompatActivity(), RetrieveDataInterface {
             RestartBroadcastReceiver().scheduleJob(applicationContext)
         } else {
             val bck = ProcessMainClass()
-            bck.launchService(applicationContext as JobService)
+            bck.launchService(applicationContext)
         }
     }
 

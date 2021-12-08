@@ -23,10 +23,10 @@ class ProcessMainClass {
     /**
      * launching the service
      */
-    fun launchService(context: JobService) {
-        if (context == null) {
+    fun launchService(context: Context) {
+/*        if (context == null) {
             return
-        }
+        }*/
         setServiceIntent(context)
         // depending on the version of Android we eitehr launch the simple service (version<O)
         // or we start a foreground service

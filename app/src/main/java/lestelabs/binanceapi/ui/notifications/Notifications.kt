@@ -8,10 +8,23 @@ import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Build
 import android.widget.RemoteViews
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import lestelabs.binanceapi.R
 import lestelabs.binanceapi.binance.Binance
 import lestelabs.binanceapi.data.streams.datasource.Candlestick
 import java.util.*
+import android.app.PendingIntent
+
+import android.content.Intent
+import androidx.annotation.RequiresApi
+
+import lestelabs.binanceapi.MainActivity
+
+
+
 
 class Notifications(context: Context) {
 
@@ -28,24 +41,33 @@ class Notifications(context: Context) {
     fun initNotifications() {
         notificationManager = mContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         contentView = RemoteViews(mContext.packageName, R.layout.activity_after_notification)
+        val intent = Intent(mContext, MainActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        val pendingIntent = PendingIntent.getActivity(
+            mContext,
+            0 /* Request code */,
+            intent,
+            PendingIntent.FLAG_ONE_SHOT
+        )
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             notificationChannel =
                 NotificationChannel(channelId, description, NotificationManager.IMPORTANCE_HIGH)
             builder = Notification.Builder(mContext, channelId)
                 .setContent(contentView)
-                .setSmallIcon(lestelabs.binanceapi.R.drawable.ic_launcher_background)
+                .setSmallIcon(R.drawable.ic_launcher_background)
                 .setLargeIcon(
                     BitmapFactory.decodeResource(
                         mContext.resources,
-                        lestelabs.binanceapi.R.drawable.ic_launcher_background
+                        R.drawable.ic_launcher_background
                     )
                 )
-            //.setContentIntent(pendingIntent)
+            .setContentIntent(pendingIntent)
             notificationChannel.enableLights(true)
             notificationChannel.lightColor = Color.GREEN
             notificationChannel.enableVibration(false)
             notificationManager.createNotificationChannel(notificationChannel)
+            mContext.applicationContext.startForegroundService(intent)
         } else {
             builder = Notification.Builder(mContext)
                 .setContent(contentView)
@@ -56,8 +78,9 @@ class Notifications(context: Context) {
                         R.drawable.ic_launcher_background
                     )
                 )
-            //.setContentIntent(pendingIntent)
+            .setContentIntent(pendingIntent)
         }
+
     }
 
     fun sendNotification(text:String) {
@@ -65,6 +88,7 @@ class Notifications(context: Context) {
         notificationManager.notify(notificationId++, builder.build())
     }
 
+    @DelicateCoroutinesApi
     fun checkIfSendBuySellNotification(candlesticks: List<Candlestick?>) {
         sendNotification("Hola caracola " + Date().hours + ":" + Date().minutes + " " + candlesticks.size)
         for (i in candlesticks.indices) {
