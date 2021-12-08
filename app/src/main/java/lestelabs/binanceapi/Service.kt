@@ -51,6 +51,7 @@ open class Service: android.app.Service() {
         mCurrentService = this
     }
 
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
@@ -148,6 +149,7 @@ open class Service: android.app.Service() {
     private var timerTask: TimerTask? = null
     var oldTime: Long = 0
 
+    @DelicateCoroutinesApi
     fun startTimer() {
         Log.i(TAG, "Starting timer")
 
@@ -157,9 +159,9 @@ open class Service: android.app.Service() {
 
         //initialize the TimerTask's job
         initializeTimerTask(this)
-        Log.i(TAG, "Scheduling...")
-        //schedule the timer, to wake up every 1 second
-        timer!!.schedule(timerTask, binance.intervalms, binance.intervalms) //
+        Log.i(TAG, "Scheduling timer... ${binance.intervalms}")
+        //schedule the timer, to wake up every 1 minute
+        timer!!.schedule(timerTask, 60000, 60000) //
     }
 
     /**
@@ -167,19 +169,25 @@ open class Service: android.app.Service() {
      */
     @DelicateCoroutinesApi
     fun initializeTimerTask(service: Service) {
+        Log.i("in timer", "timer init notifications")
         val notifications: Notifications = Notifications(service)
         var candlesticks: List<Candlestick> = listOf()
+        val zeroLong: Long = 0
         notifications.initNotifications()
         Log.i(TAG, "initialising TimerTask")
         timerTask = object : TimerTask() {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun run() {
                 Log.i("in timer", "in timer ++++  " + counter++)
-                notifications.sendNotification("in timer $counter")
-                GlobalScope.launch(Dispatchers.Main) {
-                    candlesticks = binance.getCandlesticks()
+                //notifications.sendNotification("in timer $counter")
+                if (counter*60000 % binance.intervalms  == zeroLong) {
+                    Log.i("in timer", "timer send notification")
+                    GlobalScope.launch(Dispatchers.Main) {
+                        candlesticks = binance.getCandlesticks()
+                        notifications.checkIfSendBuySellNotification(candlesticks)
+                    }
+
                 }
-                notifications.checkIfSendBuySellNotification(candlesticks)
             //
             }
         }

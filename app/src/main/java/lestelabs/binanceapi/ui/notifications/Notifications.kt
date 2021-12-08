@@ -11,7 +11,6 @@ import android.widget.RemoteViews
 import lestelabs.binanceapi.R
 import lestelabs.binanceapi.binance.Binance
 import lestelabs.binanceapi.data.streams.datasource.Candlestick
-import java.sql.Time
 import java.util.*
 
 class Notifications(context: Context) {
@@ -23,6 +22,7 @@ class Notifications(context: Context) {
     lateinit var contentView:RemoteViews
     private val channelId = "i.apps.notifications"
     private val description = "Test notification"
+    private var notificationId = 1
 
 
     fun initNotifications() {
@@ -62,11 +62,11 @@ class Notifications(context: Context) {
 
     fun sendNotification(text:String) {
         contentView.setTextViewText(R.id.tvNotification, Date().hours.toString() + ":" + Date().minutes + " " + text)
-        notificationManager.notify((0..123456).random(), builder.build())
+        notificationManager.notify(notificationId++, builder.build())
     }
 
     fun checkIfSendBuySellNotification(candlesticks: List<Candlestick?>) {
-        sendNotification("Hola caracola " + Date().hours + ":" + Date().minutes)
+        sendNotification("Hola caracola " + Date().hours + ":" + Date().minutes + " " + candlesticks.size)
         for (i in candlesticks.indices) {
             val rsi = candlesticks[i]?.rsi
             val value = candlesticks[i]?.close?.toDouble()
@@ -74,7 +74,7 @@ class Notifications(context: Context) {
             val symbol = candlesticks[i]?.stick
             val price = candlesticks[i]?.maxValue80
             if (rsi != null && sma !=null && value !=null) {
-                if (rsi < Binance().rsiLowerLinit && sma > value) {
+                if (rsi < Binance().rsiLowerLimit && sma > value) {
                     sendNotification("Buy $symbol rsi: $rsi sma: $sma")
                 } else if(rsi > Binance().rsiUpperLimit && sma<value) {
                     sendNotification("Sell $symbol at a $price rsi: $rsi sma: $sma")

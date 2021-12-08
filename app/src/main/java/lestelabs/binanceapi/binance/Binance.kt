@@ -51,14 +51,14 @@ class Binance {
     val offset = 50
     val sticks = arrayOf("ADAEUR", "BTCEUR", "ETHEUR", "SOLEUR", "BNBEUR", "IOTXBTC", "DOGEEUR", "SHIBEUR", "LUNABTC", "SANDBTC", "MANABTC", "XRPEUR", "MATICEUR" )
     val interval = CandlestickInterval.HOURLY
-    val intervalms: Long = when(interval.intervalId) {
-        "1h" -> 60*60*1000/2
+/*    val intervalms: Long = when(interval.intervalId) {
+        "1h" -> 60*60*1000
         else -> 60*60*1000
-    }
-
-    val rsiLowerLinit = 40.0
+    }*/
+    val intervalms: Long = 15*60*1000
+    val rsiLowerLimit = 40.0
     val rsiUpperLimit = 60.0
-    //val intervalms: Long = 60*1000
+
     val TAG="Binance"
     val keepAlive: Long = 15*60*1000
     // Number of candlesticks to be shown

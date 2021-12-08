@@ -26,9 +26,13 @@ import lestelabs.binanceapi.foreground.AutoStartService
 
 import android.content.Intent
 import android.app.ActivityManager
+import android.net.Uri
 import android.os.Build
 import lestelabs.binanceapi.foreground.JobService
 import lestelabs.binanceapi.foreground.RestartBroadcastReceiver
+import android.os.PowerManager
+import android.provider.Settings
+import androidx.annotation.RequiresApi
 
 
 interface RetrieveDataInterface {
@@ -58,6 +62,7 @@ class MainActivity : AppCompatActivity(), RetrieveDataInterface {
     private lateinit var mServiceIntent: Intent
 
 
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -83,9 +88,10 @@ class MainActivity : AppCompatActivity(), RetrieveDataInterface {
 
         mainHandler = Handler(Looper.getMainLooper())
         init_binance()
-        init_notification()
+        //init_notification()
         init_listener_user_binance_updates()
-        init_broadcast_service()
+        //init_battery_settings()
+        //init_broadcast_service()
 
     }
 
@@ -94,9 +100,9 @@ class MainActivity : AppCompatActivity(), RetrieveDataInterface {
         binance = Binance()
     }
 
-    fun init_notification() {
+/*    fun init_notification() {
         notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-    }
+    }*/
 
 
     fun init_listener_user_binance_updates() {
@@ -207,6 +213,17 @@ class MainActivity : AppCompatActivity(), RetrieveDataInterface {
         }
         notificationManager.notify(1234, builder.build())
 
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    fun init_battery_settings() {
+        val pm = getSystemService(POWER_SERVICE) as PowerManager
+        if (!pm.isIgnoringBatteryOptimizations(packageName)) {
+            intent.action = Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
+            intent.data = Uri.parse("package:$packageName")
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            startActivity(intent)
+        }
     }
 
     fun init_broadcast_service() {

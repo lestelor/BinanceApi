@@ -44,7 +44,7 @@ class HomeViewModel : ViewModel() {
 
 
     /// Gets Streams
-    fun getStreams(refresh: Boolean, puntero:Int, punteroSizeOffset: Int, notificationManager: NotificationManager, contentView: RemoteViews, builder: Notification.Builder) {
+    fun getStreams(refresh: Boolean, puntero:Int, punteroSizeOffset: Int) {
 
         viewModelScope.launch(Dispatchers.Main) {
             isLoading.postValue(true)
@@ -62,7 +62,7 @@ class HomeViewModel : ViewModel() {
                     }
                 }
 
-                checkIfSendBuySellNotification(candlesticks, notificationManager, contentView, builder)
+                //checkIfSendBuySellNotification(candlesticks, notificationManager, contentView, builder)
 
                 //send_notification(context)
                 // Set Streams Value

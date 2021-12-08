@@ -49,13 +49,13 @@ class HomeFragment : Fragment() {
     lateinit var mainHandler: Handler
     private lateinit var repeatIndefinetly: Runnable
 
-    // declaring notification variables
+/*    // declaring notification variables
     lateinit var notificationManager: NotificationManager
     lateinit var notificationChannel: NotificationChannel
     lateinit var builder: Notification.Builder
     lateinit var contentView:RemoteViews
     private val channelId = "i.apps.notifications"
-    private val description = "Test notification"
+    private val description = "Test notification"*/
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -75,12 +75,12 @@ class HomeFragment : Fragment() {
         //Init refresh
         initRefresh(root)
         // Init the repetition of getStreams every delta time
-        init_repeat_indefinetly()
+        //init_repeat_indefinetly()
         // Init the notification alerts
-        init_notification(root.context)
+        //init_notification(root.context)
 
         // Get Streams (not needed, it is done as first repeat)
-        //homeViewModel.getStreams(true, cursor, cursorSizeOffset)
+        homeViewModel.getStreams(true, cursor, cursorSizeOffset)
         //homeViewModel.getStreams(true, cursor, Binance().sticks.size)
         return root
     }
@@ -137,15 +137,17 @@ class HomeFragment : Fragment() {
         view.swipeRefreshLayout.setOnRefreshListener {
             cursor = 0
             //homeViewModel.getStreams(refresh = true, cursor, cursorSizeOffset)
-            homeViewModel.getStreams(true, cursor, binance.cursorSizeOffset, notificationManager, contentView, builder)
+            //homeViewModel.getStreams(true, cursor, binance.cursorSizeOffset, notificationManager, contentView, builder)
+            homeViewModel.getStreams(true, cursor, cursorSizeOffset)
         }
     }
 
-    fun init_repeat_indefinetly() {
+/*    fun init_repeat_indefinetly() {
         mainHandler = Handler(Looper.getMainLooper())
         repeatIndefinetly = object : Runnable {
             override fun run() {
-                homeViewModel.getStreams( true, cursor, cursorSizeOffset, notificationManager, contentView, builder)
+                //homeViewModel.getStreams( true, cursor, cursorSizeOffset, notificationManager, contentView, builder)
+                homeViewModel.getStreams(true, cursor, binance.cursorSizeOffset)
                 //homeViewModel.getStreams( true, cursor, 2)
                 //mainHandler.postDelayed(this, binance.keepAlive)
                 //mainHandler.postDelayed(this, deltaTime)
@@ -154,9 +156,9 @@ class HomeFragment : Fragment() {
             }
         }
         mainHandler.post(repeatIndefinetly)
-    }
+    }*/
 
-    fun init_notification(context: Context) {
+   /* fun init_notification(context: Context) {
         notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         contentView = RemoteViews(context.packageName, lestelabs.binanceapi.R.layout.activity_after_notification)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -178,7 +180,7 @@ class HomeFragment : Fragment() {
                 .setLargeIcon(BitmapFactory.decodeResource(this.resources, lestelabs.binanceapi.R.drawable.ic_launcher_background))
             //.setContentIntent(pendingIntent)
         }
-    }
+    }*/
 
 
     override fun onDestroyView() {
