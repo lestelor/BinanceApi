@@ -25,7 +25,7 @@ private val TAG = "Service"
 private var mCurrentService: Service? = null
 private var counter: Long = 0
 val binance = Binance()
-private lateinit var sharedPreferences: SharedPreferences
+
 
 open class Service: android.app.Service() {
 
@@ -44,8 +44,8 @@ open class Service: android.app.Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
 
-
-        sharedPreferences = this.getSharedPreferences("sharedpreferences", Context.MODE_PRIVATE)
+        val sharedPreferences: SharedPreferences =
+            this.getSharedPreferences("sharedpreferences", Context.MODE_PRIVATE)
         counter  = sharedPreferences.getLong("counter", 0)
 
         Log.d(TAG, "restarting Service timer counter: $counter !!")
@@ -110,10 +110,7 @@ open class Service: android.app.Service() {
     override fun onDestroy() {
         super.onDestroy()
         Log.i(TAG, "onDestroy called")
-        val editor: SharedPreferences.Editor = sharedPreferences.edit()
-        editor.putLong("counter", counter)
-        editor.commit()
-
+        saveCounter()
         // restart the never ending service
         val broadcastIntent = Intent(Globals().RESTART_INTENT)
         sendBroadcast(broadcastIntent)
@@ -129,6 +126,7 @@ open class Service: android.app.Service() {
     override fun onTaskRemoved(rootIntent: Intent?) {
         super.onTaskRemoved(rootIntent)
         Log.i(TAG, "onTaskRemoved called")
+        saveCounter()
         // restart the never ending service
         val broadcastIntent = Intent(Globals().RESTART_INTENT)
         sendBroadcast(broadcastIntent)
@@ -201,5 +199,13 @@ open class Service: android.app.Service() {
         }
     }
 
+    fun saveCounter() {
+        if (counter > Long.MAX_VALUE/2) counter = 0
+        val sharedPreferences: SharedPreferences =
+            this.getSharedPreferences("sharedpreferences", Context.MODE_PRIVATE)
+        val editor: SharedPreferences.Editor = sharedPreferences.edit()
+        editor.putLong("counter", counter)
+        editor.commit()
+    }
 
 }
