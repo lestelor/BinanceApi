@@ -1,41 +1,35 @@
 package lestelabs.binanceapi
 
-import lestelabs.binanceapi.tools.Globals
 
+import android.content.Context
 import android.content.Intent
-
-import android.R
-
+import android.content.SharedPreferences
 import android.os.Build
-
 import android.os.IBinder
 import android.util.Log
-import java.lang.Exception
-
-
-
-import androidx.annotation.Nullable;
+import androidx.annotation.Nullable
 import androidx.annotation.RequiresApi
-import kotlinx.coroutines.*
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import lestelabs.binanceapi.binance.Binance
 import lestelabs.binanceapi.data.streams.datasource.Candlestick
+import lestelabs.binanceapi.tools.Globals
 import lestelabs.binanceapi.ui.notifications.Notification
 import lestelabs.binanceapi.ui.notifications.Notifications
-
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*
 
 
 private val TAG = "Service"
 private var mCurrentService: Service? = null
-private var counter = 0
+private var counter: Long = 0
 val binance = Binance()
+private lateinit var sharedPreferences: SharedPreferences
 
 open class Service: android.app.Service() {
 
     private val NOTIFICATION_ID = 1337
-
-
 
     override fun onCreate() {
         super.onCreate()
@@ -49,6 +43,11 @@ open class Service: android.app.Service() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
+
+
+        sharedPreferences = this.getSharedPreferences("sharedpreferences", Context.MODE_PRIVATE)
+        counter  = sharedPreferences.getLong("counter", 0)
+
         Log.d(TAG, "restarting Service timer counter: $counter !!")
         //counter = 0
 
@@ -96,7 +95,7 @@ open class Service: android.app.Service() {
                         this,
                         "Service notification",
                         "This is the service's notification",
-                        R.drawable.btn_default
+                        R.drawable.ic_eye
                     )
                 )
                 Log.i(TAG, "restarting foreground successful")
@@ -111,6 +110,10 @@ open class Service: android.app.Service() {
     override fun onDestroy() {
         super.onDestroy()
         Log.i(TAG, "onDestroy called")
+        val editor: SharedPreferences.Editor = sharedPreferences.edit()
+        editor.putLong("counter", counter)
+        editor.commit()
+
         // restart the never ending service
         val broadcastIntent = Intent(Globals().RESTART_INTENT)
         sendBroadcast(broadcastIntent)

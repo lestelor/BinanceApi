@@ -59,13 +59,13 @@ class Notifications(context: Context) {
                 NotificationChannel(channelId, description, NotificationManager.IMPORTANCE_HIGH)
             builder = Notification.Builder(mContext, channelId)
                 .setContent(contentView)
-                /*.setSmallIcon(R.drawable.ic_launcher_background)
+                .setSmallIcon(R.drawable.ic_launcher_background)
                 .setLargeIcon(
                     BitmapFactory.decodeResource(
                         mContext.resources,
-                        R.drawable.ic_launcher_background
+                        R.drawable.ic_eye
                     )
-                )*/
+                )
             .setContentIntent(pendingIntent)
             notificationChannel.enableLights(true)
             notificationChannel.lightColor = Color.GREEN
@@ -75,13 +75,13 @@ class Notifications(context: Context) {
         } else {
             builder = Notification.Builder(mContext)
                 .setContent(contentView)
-/*               .setSmallIcon(R.drawable.ic_launcher_background)
+              .setSmallIcon(R.drawable.ic_launcher_background)
                 .setLargeIcon(
                     BitmapFactory.decodeResource(
                         mContext.resources,
-                        R.drawable.ic_launcher_background
+                        R.drawable.ic_eye
                     )
-                )*/
+                )
             .setContentIntent(pendingIntent)
         }
 

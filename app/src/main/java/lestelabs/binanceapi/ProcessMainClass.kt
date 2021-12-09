@@ -4,10 +4,11 @@ import android.content.Context
 import android.os.Build
 import android.content.Intent
 import android.util.Log;
+import androidx.appcompat.app.AppCompatActivity
 import lestelabs.binanceapi.foreground.JobService
 
 
-class ProcessMainClass {
+class ProcessMainClass: AppCompatActivity() {
     val TAG = ProcessMainClass::class.java.simpleName
     private var serviceIntent: Intent? = null
 
