@@ -1,4 +1,4 @@
-package lestelabs.binanceapi.foreground
+package lestelabs.binanceapi.ui.notifications
 
 import android.os.Build
 
@@ -15,7 +15,6 @@ import android.content.Context
 import android.content.Intent
 import androidx.annotation.RequiresApi
 import lestelabs.binanceapi.MainActivity
-import androidx.core.app.NotificationCompat;
 import lestelabs.binanceapi.R
 
 

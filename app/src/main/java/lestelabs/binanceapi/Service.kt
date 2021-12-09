@@ -5,29 +5,22 @@ import lestelabs.binanceapi.tools.Globals
 import android.content.Intent
 
 import android.R
-import android.app.NotificationManager
-import android.content.Context
 
 import android.os.Build
 
 import android.os.IBinder
 import android.util.Log
-import android.widget.RemoteViews
 import java.lang.Exception
 
 
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi
-import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.*
 import lestelabs.binanceapi.binance.Binance
 import lestelabs.binanceapi.data.streams.datasource.Candlestick
-import lestelabs.binanceapi.foreground.JobService
-import lestelabs.binanceapi.foreground.Notification
+import lestelabs.binanceapi.ui.notifications.Notification
 import lestelabs.binanceapi.ui.notifications.Notifications
-import org.koin.android.ext.android.get
-import org.koin.ext.scope
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -40,7 +33,8 @@ val binance = Binance()
 
 open class Service: android.app.Service() {
 
-    protected val NOTIFICATION_ID = 1337
+    private val NOTIFICATION_ID = 1337
+
 
 
     override fun onCreate() {
@@ -55,13 +49,13 @@ open class Service: android.app.Service() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-        Log.d(TAG, "restarting Service !!")
-        counter = 0
+        Log.d(TAG, "restarting Service timer counter: $counter !!")
+        //counter = 0
 
         // it has been killed by Android and now it is restarted. We must make sure to have reinitialised everything
         if (intent == null) {
             val bck = ProcessMainClass()
-            bck.launchService(context = JobService())
+            bck.launchService(this)
         }
 
         // make sure you call the startForeground on onStartCommand because otherwise

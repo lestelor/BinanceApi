@@ -19,7 +19,10 @@ import java.util.*
 import android.app.PendingIntent
 
 import android.content.Intent
+import android.graphics.drawable.VectorDrawable
 import androidx.annotation.RequiresApi
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.drawable.toBitmap
 
 import lestelabs.binanceapi.MainActivity
 
@@ -43,6 +46,7 @@ class Notifications(context: Context) {
         contentView = RemoteViews(mContext.packageName, R.layout.activity_after_notification)
         val intent = Intent(mContext, MainActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+
         val pendingIntent = PendingIntent.getActivity(
             mContext,
             0 /* Request code */,
@@ -55,13 +59,13 @@ class Notifications(context: Context) {
                 NotificationChannel(channelId, description, NotificationManager.IMPORTANCE_HIGH)
             builder = Notification.Builder(mContext, channelId)
                 .setContent(contentView)
-                .setSmallIcon(R.drawable.ic_launcher_background)
+                /*.setSmallIcon(R.drawable.ic_launcher_background)
                 .setLargeIcon(
                     BitmapFactory.decodeResource(
                         mContext.resources,
                         R.drawable.ic_launcher_background
                     )
-                )
+                )*/
             .setContentIntent(pendingIntent)
             notificationChannel.enableLights(true)
             notificationChannel.lightColor = Color.GREEN
@@ -71,13 +75,13 @@ class Notifications(context: Context) {
         } else {
             builder = Notification.Builder(mContext)
                 .setContent(contentView)
-                .setSmallIcon(R.drawable.ic_launcher_background)
+/*               .setSmallIcon(R.drawable.ic_launcher_background)
                 .setLargeIcon(
                     BitmapFactory.decodeResource(
                         mContext.resources,
                         R.drawable.ic_launcher_background
                     )
-                )
+                )*/
             .setContentIntent(pendingIntent)
         }
 

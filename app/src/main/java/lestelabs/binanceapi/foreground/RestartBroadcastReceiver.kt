@@ -1,20 +1,14 @@
 package lestelabs.binanceapi.foreground
 
-import android.content.Intent
-
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.util.Log
 import android.app.job.JobInfo
-
-import android.content.ComponentName
-
-import android.content.Context.JOB_SCHEDULER_SERVICE
-
 import android.app.job.JobScheduler
-
+import android.content.BroadcastReceiver
+import android.content.ComponentName
+import android.content.Context
+import android.content.Context.JOB_SCHEDULER_SERVICE
+import android.content.Intent
 import android.os.Build
-
+import android.util.Log
 import androidx.annotation.RequiresApi
 import lestelabs.binanceapi.ProcessMainClass
 import lestelabs.binanceapi.Service
@@ -33,7 +27,7 @@ class RestartBroadcastReceiver : BroadcastReceiver() {
             scheduleJob(context)
         } else {
             val bck = ProcessMainClass()
-            bck.launchService(context = JobService())
+            bck.launchService(context)
         }
     }
 

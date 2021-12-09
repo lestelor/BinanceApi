@@ -4,7 +4,6 @@ package lestelabs.binanceapi
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.content.Context
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.*
@@ -22,13 +21,11 @@ import lestelabs.binanceapi.binance.api.client.domain.event.AccountUpdateEvent
 import lestelabs.binanceapi.binance.api.client.domain.event.OrderTradeUpdateEvent
 import lestelabs.binanceapi.binance.api.client.domain.event.UserDataUpdateEvent
 import lestelabs.binanceapi.databinding.ActivityMainBinding
-import lestelabs.binanceapi.foreground.AutoStartService
 
 import android.content.Intent
 import android.app.ActivityManager
 import android.net.Uri
 import android.os.Build
-import lestelabs.binanceapi.foreground.JobService
 import lestelabs.binanceapi.foreground.RestartBroadcastReceiver
 import android.os.PowerManager
 import android.provider.Settings
@@ -58,7 +55,6 @@ class MainActivity : AppCompatActivity(), RetrieveDataInterface {
     lateinit var mainHandler: Handler
     lateinit var binanceKeepAlive: Runnable
 
-    private lateinit var mAutoStartService: AutoStartService
     private lateinit var mServiceIntent: Intent
 
 
@@ -91,7 +87,7 @@ class MainActivity : AppCompatActivity(), RetrieveDataInterface {
         //init_notification()
         init_listener_user_binance_updates()
         //init_battery_settings()
-        //init_broadcast_service()
+        init_broadcast_service()
 
     }
 
@@ -227,11 +223,12 @@ class MainActivity : AppCompatActivity(), RetrieveDataInterface {
     }
 
     fun init_broadcast_service() {
-        mAutoStartService = AutoStartService()
-        mServiceIntent = Intent(this, AutoStartService::class.java)
 
-        if (!isMyServiceRunning(AutoStartService::class.java)) {
-            startService(mServiceIntent)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            RestartBroadcastReceiver().scheduleJob(applicationContext)
+        } else {
+            val bck = ProcessMainClass()
+            bck.launchService(applicationContext)
         }
     }
 
@@ -258,12 +255,7 @@ class MainActivity : AppCompatActivity(), RetrieveDataInterface {
     override fun onResume() {
         super.onResume()
         mainHandler.post(binanceKeepAlive)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            RestartBroadcastReceiver().scheduleJob(applicationContext)
-        } else {
-            val bck = ProcessMainClass()
-            bck.launchService(applicationContext)
-        }
+
     }
 
     override fun onDestroy() {
