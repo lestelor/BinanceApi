@@ -165,10 +165,10 @@ open class Service: android.app.Service() {
     @DelicateCoroutinesApi
     fun initializeTimerTask(service: Service) {
         Log.i("in timer", "timer init notifications")
-        val notifications: Notifications = Notifications(service)
+        //val notifications: Notifications = Notifications(service)
         var candlesticks: List<Candlestick> = listOf()
         val zeroLong: Long = 0
-        notifications.initNotifications()
+        //notifications.initNotifications()
         Log.i(TAG, "initialising TimerTask")
         timerTask = object : TimerTask() {
             @RequiresApi(Build.VERSION_CODES.O)
@@ -179,6 +179,8 @@ open class Service: android.app.Service() {
                     Log.i("in timer", "timer send notification")
                     GlobalScope.launch(Dispatchers.IO) {
                         candlesticks = binance.getCandlesticks()
+                        val notifications: Notifications = Notifications(service)
+                        notifications.initNotifications()
                         notifications.checkIfSendBuySellNotification(candlesticks)
                     }
 
