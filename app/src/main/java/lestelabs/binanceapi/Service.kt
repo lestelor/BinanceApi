@@ -37,6 +37,10 @@ open class Service: android.app.Service() {
             restartForeground()
         }
         mCurrentService = this
+
+        val sharedPreferences: SharedPreferences =
+            this.getSharedPreferences("sharedpreferences", Context.MODE_PRIVATE)
+        counter  = sharedPreferences.getLong("counter", 0)
     }
 
 
@@ -44,9 +48,7 @@ open class Service: android.app.Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
 
-        val sharedPreferences: SharedPreferences =
-            this.getSharedPreferences("sharedpreferences", Context.MODE_PRIVATE)
-        counter  = sharedPreferences.getLong("counter", 0)
+
 
         Log.d(TAG, "restarting Service timer counter: $counter !!")
         //counter = 0
