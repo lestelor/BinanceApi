@@ -6,6 +6,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/itemNotification"/>
+        android:id="@+id/tvItemNotification"
+        android:fillViewport="true"/>
 
 </androidx.appcompat.widget.LinearLayoutCompat>

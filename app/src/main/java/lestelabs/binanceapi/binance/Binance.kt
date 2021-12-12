@@ -55,14 +55,15 @@ class Binance {
         "1h" -> 60*60*1000
         else -> 60*60*1000
     }
-    //val intervalms: Long = 15*60*1000
+    //val intervalms: Long = 30*1000
     val rsiLowerLimit = 40.0
     val rsiUpperLimit = 60.0
 
     val TAG="Binance"
     val keepAlive: Long = 15*60*1000
     // Number of candlesticks to be shown
-    val cursorSizeOffset = sticks.size
+    //val cursorSizeOffset = sticks.size
+    val cursorSizeOffset = 1
 
 
     private fun initFactory(): BinanceApiClientFactory {
