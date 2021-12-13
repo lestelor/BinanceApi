@@ -55,7 +55,7 @@ class Binance {
         "1h" -> 60*60*1000
         else -> 60*60*1000
     }*/
-    val intervalms: Long = 15*60*1000
+    val intervalms: Long = 60*60*1000
     val rsiLowerLimit = 40.0
     val rsiUpperLimit = 60.0
 

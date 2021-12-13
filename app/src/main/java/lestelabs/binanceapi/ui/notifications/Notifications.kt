@@ -108,7 +108,7 @@ class Notifications(context: Context) {
     fun checkIfSendBuySellNotification(candlesticks: List<Candlestick?>): List<String> {
         val textNotification: MutableList<String> = mutableListOf()
         sendNotification("Hola caracola " + Date().hours + ":" + Date().minutes + " " + candlesticks.size)
-        textNotification.add("hey hey hey ...")
+        textNotification.add(Date().hours.toString() + ":"+ Date().minutes  + " hey hey hey ...")
         for (i in candlesticks.indices) {
             val rsi = candlesticks[i]?.rsi
             val value = candlesticks[i]?.close?.toDouble()
