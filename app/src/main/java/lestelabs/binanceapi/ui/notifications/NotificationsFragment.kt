@@ -1,6 +1,5 @@
 package lestelabs.binanceapi.ui.notifications
 
-import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -8,22 +7,18 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ListView
-import android.widget.RemoteViews
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelStoreOwner
-import androidx.lifecycle.viewModelScope
 import kotlinx.android.synthetic.main.fragment_notifications.view.*
 import kotlinx.coroutines.*
-import lestelabs.binanceapi.MainActivity
-import lestelabs.binanceapi.R
-import lestelabs.binanceapi.Service
 import lestelabs.binanceapi.binance.Binance
+import lestelabs.binanceapi.data.streams.datasource.Candlestick
 import lestelabs.binanceapi.databinding.FragmentNotificationsBinding
-import java.lang.Runnable
+
+
+const val STATE_LIST = "List Notifications Adapter Data"
+var items: MutableList<String> = mutableListOf()
 
 
 class NotificationsFragment : Fragment() {
@@ -44,6 +39,11 @@ class NotificationsFragment : Fragment() {
     lateinit var binance: Binance
     lateinit var notifications: Notifications
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        val texts = this.adapter.getList() as ArrayList
+        outState.putStringArrayList(STATE_LIST, texts)
+    }
 
 
     override fun onCreateView(
@@ -69,6 +69,17 @@ class NotificationsFragment : Fragment() {
         return root
     }
 
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState);
+        //If restoring from state, load the list from the bundle
+        if (savedInstanceState != null) {
+            items =
+                savedInstanceState.getStringArray(STATE_LIST) as MutableList<String>
+            adapter = NotificationAdapter(requireActivity(), items)
+        }
+
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -76,9 +87,9 @@ class NotificationsFragment : Fragment() {
 
     fun init_list(view: View) {
         // Construct the data source
-        val texts: ArrayList<String> = arrayListOf()
+        //val texts: MutableList<String> = adapter.mNotifications?: mutableListOf()
         // Create the adapter to convert the array to views
-        adapter = NotificationAdapter(requireActivity(), texts)
+        adapter = NotificationAdapter(requireActivity(), items?: mutableListOf())
         // Attach the adapter to a ListView
         view.NotificationsList.adapter = adapter
     }
@@ -91,8 +102,10 @@ class NotificationsFragment : Fragment() {
 
         notificationsViewModel.notifications.observe(viewLifecycleOwner, Observer {
             Log.d(TAG, "timer notifications number: ${it.size}")
-            adapter.clear()
+            //adapter.clear()
+
             adapter.addAll(it)
+            adapter.notifyDataSetChanged()
         })
     }
 
@@ -101,7 +114,8 @@ class NotificationsFragment : Fragment() {
         mainHandler = Handler(Looper.getMainLooper())
         runnable = object : Runnable {
             override fun run() {
-                check_send_notification()
+                val nottificationsText = check_send_notification()
+                items = items.plus(nottificationsText).toMutableList()
                 //notificationsViewModel.notificationPutText(listOf("hola caracola"))
                 //notificationsViewModel.notificationPutText(listOf("nice to meet you"))
                 //binance.syncClient.keepAliveUserDataStream(listenKey);
@@ -113,15 +127,18 @@ class NotificationsFragment : Fragment() {
     }
 
     @DelicateCoroutinesApi
-    fun check_send_notification() {
-        GlobalScope.launch(Dispatchers.Main) {
-            val candlesticks = withContext(Dispatchers.IO) {
-                binance.getCandlesticks()
-            }
-            val notificationsText = notifications.checkIfSendBuySellNotification(candlesticks)
-            notificationsViewModel.notificationPutText(notificationsText)
+    fun check_send_notification(): List<String> {
+
+        var candlesticks: List<Candlestick> = mutableListOf()
+        GlobalScope.launch(Dispatchers.IO) {
+            candlesticks = binance.getCandlesticks()
         }
+        val notificationsText = notifications.checkIfSendBuySellNotification(candlesticks)
+        notificationsViewModel.notificationPutText(notificationsText)
+        return  notificationsText
 
     }
+
+
 
 }

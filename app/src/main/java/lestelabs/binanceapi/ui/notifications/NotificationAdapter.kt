@@ -1,6 +1,7 @@
 package lestelabs.binanceapi.ui.notifications
 
 import android.content.Context
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,8 +10,13 @@ import kotlinx.android.synthetic.main.item_notification.view.*
 import lestelabs.binanceapi.R
 
 
-class NotificationAdapter(context: Context, notifications: List<String>) :
-    ArrayAdapter<String?>(context, 0, notifications) {
+
+
+class NotificationAdapter(context: Context, notifications: MutableList<String>) :
+    ArrayAdapter<String?>(context, 0, notifications as List<String?>) {
+
+    val mNotifications = notifications
+
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
 
         // Get the data item for this position
@@ -27,4 +33,10 @@ class NotificationAdapter(context: Context, notifications: List<String>) :
         // Return the completed view to render on screen
         return view
     }
-}
+
+    fun getList(): List<String> {
+        return mNotifications
+    }
+
+  }
+

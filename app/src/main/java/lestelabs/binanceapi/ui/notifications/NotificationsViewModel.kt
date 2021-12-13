@@ -25,9 +25,10 @@ class NotificationsViewModel : ViewModel() {
     val notifications = MutableLiveData<List<String>>()
 
     fun notificationPutText(text: List<String>) {
-            val currentNotifications = notifications.value.orEmpty()
-            val totalNotifications = currentNotifications.plus(text)
-            notifications.value = totalNotifications
+/*            val currentNotifications: List<String> = notifications.value.orEmpty()
+            val totalNotifications: List<String> = currentNotifications.plus(text)
+            notifications.postValue(totalNotifications)*/
+        notifications.postValue(text)
             //Log.d(TAG, "timer notification view model ${notifications.value!!.size}")
     }
 
