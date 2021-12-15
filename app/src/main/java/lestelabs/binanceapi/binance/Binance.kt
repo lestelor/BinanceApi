@@ -40,6 +40,7 @@ import kotlinx.android.synthetic.main.fragment_dashboard.view.*
 import android.widget.AdapterView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import lestelabs.binanceapi.binance
 import java.security.Timestamp
 import java.util.*
 import kotlin.system.measureTimeMillis
@@ -85,7 +86,8 @@ class Binance {
 
     fun getBalance(symbol:String): List<String> {
         val output: MutableList<String> = mutableListOf()
-        val value = syncClient.account.getAssetBalance(symbol)
+        val serverTime = syncClient.serverTime
+        val value = syncClient.getAccount(60000, serverTime).getAssetBalance(symbol)
         output.add(value.free)
         output.add(value.locked)
         return output
@@ -94,8 +96,10 @@ class Binance {
     fun getCandleStickComplete(symbol: String): MutableList<Candlestick> {
         val symbolShort = symbol.substring(0,symbol.length-1-2).toString()
         val response = syncClient.getCandlestickBars(symbol, interval)
-        val balances = syncClient.getAccount(60000, Date().time-1000).getAssetBalance(symbolShort)
-        val inputIndicators = DoubleArray (response.size)
+        val serverTime = syncClient.serverTime
+        val balances =
+            syncClient.getAccount(60000, serverTime).getAssetBalance(symbolShort)
+        val inputIndicators = DoubleArray(response.size)
         for (i in 0 until response.size) {
             response[i].stick = symbol
             inputIndicators[i] = response[i].close.toDouble()
@@ -103,14 +107,17 @@ class Binance {
         val sma = Indicators.movingAverage(inputIndicators, offset)
         val rsi = Indicators.rsi(inputIndicators, offset)
         for (i in offset until response.size) {
-            response[i].sma = sma[i-offset]
-            response[i].rsi = rsi[i-offset]
+            response[i].sma = sma[i - offset]
+            response[i].rsi = rsi[i - offset]
         }
-        response[response.size-1].ownFree = balances.free.toDouble()
-        response[response.size-1].ownLocked = balances.locked.toDouble()
-        response[response.size-1].ownValueEUR = (balances.free.toDouble() + balances.locked.toDouble())*response[response.size-1].close.toDouble()
-        response[response.size-1].maxValue80 = response.maxOf {it ->  it.close.toDouble()} * 0.8
+        response[response.size - 1].ownFree = balances.free.toDouble()
+        response[response.size - 1].ownLocked = balances.locked.toDouble()
+        response[response.size - 1].ownValueEUR =
+            (balances.free.toDouble() + balances.locked.toDouble()) * response[response.size - 1].close.toDouble()
+        response[response.size - 1].maxValue80 =
+            response.maxOf { it -> it.close.toDouble() } * 0.8
         return response
+
     }
 
     fun getCandleSticksSync(symbol:String): Pair<List<Long>,Pair<MutableList<DoubleArray>, MutableList<DoubleArray>>> {
