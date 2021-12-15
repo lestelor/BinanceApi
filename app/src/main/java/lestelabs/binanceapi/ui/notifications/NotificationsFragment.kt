@@ -20,8 +20,10 @@ import kotlin.collections.ArrayList
 
 
 const val STATE_LIST = "List Notifications Adapter Data"
+const val STATE_TIMER = "Timer is on"
 var items: MutableList<String> = mutableListOf()
 var timer: Long = 0
+var timerOn = false
 
 
 class NotificationsFragment : Fragment() {
@@ -47,6 +49,7 @@ class NotificationsFragment : Fragment() {
         //val texts = this.adapter.getList() as ArrayList
         //outState.putStringArrayList(STATE_LIST, texts)
         outState.putStringArrayList(STATE_LIST, items as java.util.ArrayList<String>)
+        outState.putBoolean(STATE_TIMER, timerOn)
     }
 
 
@@ -68,7 +71,7 @@ class NotificationsFragment : Fragment() {
         binance = Binance()
         notifications = Notifications(root.context)
         notifications.initNotifications()
-        init_runnable()
+        if (!timerOn) init_runnable()
 
         return root
     }
@@ -79,6 +82,7 @@ class NotificationsFragment : Fragment() {
         if (savedInstanceState != null) {
             items =
                 savedInstanceState.getStringArray(STATE_LIST) as MutableList<String>
+            timerOn = savedInstanceState.getBoolean(STATE_TIMER)
             adapter = NotificationAdapter(requireActivity(), items)
         }
 
@@ -129,6 +133,7 @@ class NotificationsFragment : Fragment() {
             }
         }
         mainHandler.post(runnable)
+        timerOn = true
     }
 
     @DelicateCoroutinesApi
