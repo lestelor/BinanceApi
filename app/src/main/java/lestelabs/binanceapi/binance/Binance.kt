@@ -40,6 +40,9 @@ import kotlinx.android.synthetic.main.fragment_dashboard.view.*
 import android.widget.AdapterView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.security.Timestamp
+import java.util.*
+import kotlin.system.measureTimeMillis
 
 
 class Binance {
@@ -55,7 +58,7 @@ class Binance {
         "1h" -> 60*60*1000
         else -> 60*60*1000
     }*/
-    val intervalms: Long = 60*60*1000
+    val intervalms: Long = 30*60*1000
     val rsiLowerLimit = 40.0
     val rsiUpperLimit = 60.0
 
@@ -91,7 +94,7 @@ class Binance {
     fun getCandleStickComplete(symbol: String): MutableList<Candlestick> {
         val symbolShort = symbol.substring(0,symbol.length-1-2).toString()
         val response = syncClient.getCandlestickBars(symbol, interval)
-        val balances = syncClient.account.getAssetBalance(symbolShort)
+        val balances = syncClient.getAccount(60000, Date().time-1000).getAssetBalance(symbolShort)
         val inputIndicators = DoubleArray (response.size)
         for (i in 0 until response.size) {
             response[i].stick = symbol

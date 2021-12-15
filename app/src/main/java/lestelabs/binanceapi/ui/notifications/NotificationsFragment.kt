@@ -121,36 +121,30 @@ class NotificationsFragment : Fragment() {
                 if ((timer*60*1000) % binance.intervalms == 0.toLong()) {
                     Log.d(TAG, "timer notification fragment runnable timer send notification")
                     val notificationsText = check_send_notification()
-                    items = items.plus(notificationsText).toMutableList()
 
-                    //notificationsViewModel.notificationPutText(items)
-                    adapter.clear()
-                    adapter.addAll(items)
-                    //notificationsViewModel.notificationPutText(listOf("hola caracola"))
-                    //notificationsViewModel.notificationPutText(listOf("nice to meet you"))
-                    //binance.syncClient.keepAliveUserDataStream(listenKey);
                 }
 
                 mainHandler.postDelayed(this, 60000)
                 Log.d(TAG, Date().hours.toString() + ":"+ Date().minutes + " timer notification fragment runnable timer+++++ " + timer++)
             }
         }
-        mainHandler.postDelayed(runnable, binance.intervalms)
+        mainHandler.post(runnable)
     }
 
     @DelicateCoroutinesApi
-    fun check_send_notification(): List<String> {
+    fun check_send_notification() {
 
-        var candlesticks: List<Candlestick> = mutableListOf()
-        GlobalScope.launch(Dispatchers.IO) {
-            candlesticks = binance.getCandlesticks()
+        GlobalScope.launch(Dispatchers.Main) {
+            var candlesticks: List<Candlestick> = mutableListOf()
+            candlesticks = withContext(Dispatchers.IO) {
+                binance.getCandlesticks()
+            }
+            val notificationsText = notifications.checkIfSendBuySellNotification(candlesticks)
+            //notificationsViewModel.notificationPutText(notificationsText)
+            items = items.plus(notificationsText).toMutableList()
+            adapter.clear()
+            adapter.addAll(items)
         }
-        val notificationsText = notifications.checkIfSendBuySellNotification(candlesticks)
-        notificationsViewModel.notificationPutText(notificationsText)
-        return  notificationsText
-
     }
-
-
-
 }
+
