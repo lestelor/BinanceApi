@@ -9,6 +9,7 @@ import android.os.IBinder
 import android.util.Log
 import androidx.annotation.Nullable
 import androidx.annotation.RequiresApi
+import androidx.lifecycle.ViewModelProvider
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -16,8 +17,7 @@ import kotlinx.coroutines.launch
 import lestelabs.binanceapi.binance.Binance
 import lestelabs.binanceapi.data.streams.datasource.Candlestick
 import lestelabs.binanceapi.tools.Globals
-import lestelabs.binanceapi.ui.notifications.Notification
-import lestelabs.binanceapi.ui.notifications.Notifications
+import lestelabs.binanceapi.ui.notifications.*
 import java.util.*
 
 
@@ -26,6 +26,9 @@ private var mCurrentService: Service? = null
 private var counter: Long = 0
 val binance = Binance()
 
+interface ListenerService {
+    fun get(notification: String)
+}
 
 open class Service: android.app.Service() {
 
@@ -41,6 +44,7 @@ open class Service: android.app.Service() {
         val sharedPreferences: SharedPreferences =
             this.getSharedPreferences("sharedpreferences", Context.MODE_PRIVATE)
         counter  = sharedPreferences.getLong("counter", 0)
+
     }
 
 
@@ -167,7 +171,7 @@ open class Service: android.app.Service() {
     @DelicateCoroutinesApi
     fun initializeTimerTask(service: Service) {
         Log.i("in timer", "timer init notifications")
-        val notifications: Notifications = Notifications(service)
+        val notifications: Notifications = Notifications(this)
         notifications.initNotifications()
         var candlesticks: List<Candlestick> = listOf()
         val zeroLong: Long = 0

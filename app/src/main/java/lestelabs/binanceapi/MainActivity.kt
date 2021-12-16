@@ -53,9 +53,9 @@ class MainActivity : AppCompatActivity(), RetrieveDataInterface {
 
     private lateinit var binance: Binance
     lateinit var mainHandler: Handler
-    lateinit var binanceKeepAlive: Runnable
+    //lateinit var binanceKeepAlive: Runnable
 
-    private lateinit var mServiceIntent: Intent
+    //private lateinit var mServiceIntent: Intent
 
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -85,9 +85,9 @@ class MainActivity : AppCompatActivity(), RetrieveDataInterface {
         mainHandler = Handler(Looper.getMainLooper())
         init_binance()
         //init_notification()
-        init_listener_user_binance_updates()
+        //init_listener_user_binance_updates()
         //init_battery_settings()
-        init_broadcast_service()
+        //init_broadcast_service()
 
     }
 
@@ -139,13 +139,13 @@ class MainActivity : AppCompatActivity(), RetrieveDataInterface {
         // First keep alive
         binance.syncClient.keepAliveUserDataStream(listenKey);
 
-        binanceKeepAlive = object : Runnable {
+        /*binanceKeepAlive = object : Runnable {
             override fun run() {
                 binance.syncClient.keepAliveUserDataStream(listenKey);
                 mainHandler.postDelayed(this, binance.keepAlive)
                 Log.d(TAG, "binance keep alive")
             }
-        }
+        }*/
 
         // call every 15min
         //client.keepAliveUserDataStream(listenKey);
@@ -249,18 +249,18 @@ class MainActivity : AppCompatActivity(), RetrieveDataInterface {
 
     override fun onPause() {
         super.onPause()
-        mainHandler.removeCallbacks(binanceKeepAlive)
+        //mainHandler.removeCallbacks(binanceKeepAlive)
     }
 
     override fun onResume() {
         super.onResume()
-        mainHandler.post(binanceKeepAlive)
+        //mainHandler.post(binanceKeepAlive)
 
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        stopService(mServiceIntent)
+        //stopService(mServiceIntent)
     }
 
     companion object {

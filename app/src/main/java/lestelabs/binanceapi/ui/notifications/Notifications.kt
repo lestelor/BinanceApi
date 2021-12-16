@@ -20,13 +20,15 @@ import android.app.PendingIntent
 
 import android.content.Intent
 import android.graphics.drawable.VectorDrawable
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
+import androidx.lifecycle.ViewModelProvider
 
 import lestelabs.binanceapi.MainActivity
-
-
+import lestelabs.binanceapi.databinding.FragmentNotificationsBinding
+import kotlin.concurrent.thread
 
 
 class Notifications(context: Context) {
@@ -39,6 +41,8 @@ class Notifications(context: Context) {
     private val channelId = "i.apps.notifications"
     private val description = "Test notification"
     private var notificationId = 1
+    private lateinit var listenerNotificationsViewModel: ListenerNotificationViewModel
+    private val TAG ="Notifications"
 
 
     fun initNotifications() {
@@ -85,6 +89,14 @@ class Notifications(context: Context) {
             .setContentIntent(pendingIntent)
         }
 
+        try {
+            listenerNotificationsViewModel = NotificationsViewModel() as ListenerNotificationViewModel
+            // listener.showFormula(show?);
+        } catch (castException: ClassCastException) {
+            Log.d(TAG, "Timer Notifications error !!!!!!!!!!!!!!!")
+            /** The activity does not implement the listener.  */
+        }
+
     }
 
     fun sendNotification(text:String) {
@@ -93,21 +105,29 @@ class Notifications(context: Context) {
     }
 
     @DelicateCoroutinesApi
-    fun checkIfSendBuySellNotification(candlesticks: List<Candlestick?>) {
+    fun checkIfSendBuySellNotification(candlesticks: List<Candlestick?>): List<String> {
+        val textNotification: MutableList<String> = mutableListOf()
         sendNotification("Hola caracola " + Date().hours + ":" + Date().minutes + " " + candlesticks.size)
+        textNotification.add(Date().hours.toString() + ":"+ Date().minutes  + " hey hey hey ...")
         for (i in candlesticks.indices) {
             val rsi = candlesticks[i]?.rsi
             val value = candlesticks[i]?.close?.toDouble()
             val sma = candlesticks[i]?.sma?.toDouble()
             val symbol = candlesticks[i]?.stick
             val price = candlesticks[i]?.maxValue80
-            if (rsi != null && sma !=null && value !=null) {
+            if (rsi != null && sma != null && value != null) {
                 if (rsi < Binance().rsiLowerLimit && sma > value) {
-                    sendNotification("Buy $symbol rsi: $rsi sma: $sma")
-                } else if(rsi > Binance().rsiUpperLimit && sma<value) {
-                    sendNotification("Sell $symbol at a $price rsi: $rsi sma: $sma")
+                    val text = "Buy $symbol rsi: $rsi sma: $sma"
+                    textNotification.add(text)
+                    sendNotification(text)
+                } else if (rsi > Binance().rsiUpperLimit && sma < value) {
+                    val text = "Sell $symbol at a $price rsi: $rsi sma: $sma"
+                    textNotification.add(text)
+                    sendNotification(text)
                 }
             }
         }
+        return textNotification
     }
+
 }

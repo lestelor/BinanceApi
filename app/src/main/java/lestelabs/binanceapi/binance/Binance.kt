@@ -40,6 +40,10 @@ import kotlinx.android.synthetic.main.fragment_dashboard.view.*
 import android.widget.AdapterView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import lestelabs.binanceapi.binance
+import java.security.Timestamp
+import java.util.*
+import kotlin.system.measureTimeMillis
 
 
 class Binance {
@@ -51,18 +55,19 @@ class Binance {
     val offset = 50
     val sticks = arrayOf("ADAEUR", "BTCEUR", "ETHEUR", "SOLEUR", "BNBEUR", "IOTXBTC", "DOGEEUR", "SHIBEUR", "LUNABTC", "SANDBTC", "MANABTC", "XRPEUR", "MATICEUR" )
     val interval = CandlestickInterval.HOURLY
-    val intervalms: Long = when(interval.intervalId) {
+/*    val intervalms: Long = when(interval.intervalId) {
         "1h" -> 60*60*1000
         else -> 60*60*1000
-    }
-    //val intervalms: Long = 15*60*1000
+    }*/
+    val intervalms: Long = 30*60*1000
     val rsiLowerLimit = 40.0
     val rsiUpperLimit = 60.0
 
     val TAG="Binance"
     val keepAlive: Long = 15*60*1000
     // Number of candlesticks to be shown
-    val cursorSizeOffset = sticks.size
+    //val cursorSizeOffset = sticks.size
+    val cursorSizeOffset = 1
 
 
     private fun initFactory(): BinanceApiClientFactory {
@@ -81,7 +86,8 @@ class Binance {
 
     fun getBalance(symbol:String): List<String> {
         val output: MutableList<String> = mutableListOf()
-        val value = syncClient.account.getAssetBalance(symbol)
+        val serverTime = syncClient.serverTime
+        val value = syncClient.getAccount(60000, serverTime).getAssetBalance(symbol)
         output.add(value.free)
         output.add(value.locked)
         return output
@@ -90,8 +96,10 @@ class Binance {
     fun getCandleStickComplete(symbol: String): MutableList<Candlestick> {
         val symbolShort = symbol.substring(0,symbol.length-1-2).toString()
         val response = syncClient.getCandlestickBars(symbol, interval)
-        val balances = syncClient.account.getAssetBalance(symbolShort)
-        val inputIndicators = DoubleArray (response.size)
+        val serverTime = syncClient.serverTime
+        val balances =
+            syncClient.getAccount(60000, serverTime).getAssetBalance(symbolShort)
+        val inputIndicators = DoubleArray(response.size)
         for (i in 0 until response.size) {
             response[i].stick = symbol
             inputIndicators[i] = response[i].close.toDouble()
@@ -99,14 +107,17 @@ class Binance {
         val sma = Indicators.movingAverage(inputIndicators, offset)
         val rsi = Indicators.rsi(inputIndicators, offset)
         for (i in offset until response.size) {
-            response[i].sma = sma[i-offset]
-            response[i].rsi = rsi[i-offset]
+            response[i].sma = sma[i - offset]
+            response[i].rsi = rsi[i - offset]
         }
-        response[response.size-1].ownFree = balances.free.toDouble()
-        response[response.size-1].ownLocked = balances.locked.toDouble()
-        response[response.size-1].ownValueEUR = (balances.free.toDouble() + balances.locked.toDouble())*response[response.size-1].close.toDouble()
-        response[response.size-1].maxValue80 = response.maxOf {it ->  it.close.toDouble()} * 0.8
+        response[response.size - 1].ownFree = balances.free.toDouble()
+        response[response.size - 1].ownLocked = balances.locked.toDouble()
+        response[response.size - 1].ownValueEUR =
+            (balances.free.toDouble() + balances.locked.toDouble()) * response[response.size - 1].close.toDouble()
+        response[response.size - 1].maxValue80 =
+            response.maxOf { it -> it.close.toDouble() } * 0.8
         return response
+
     }
 
     fun getCandleSticksSync(symbol:String): Pair<List<Long>,Pair<MutableList<DoubleArray>, MutableList<DoubleArray>>> {
