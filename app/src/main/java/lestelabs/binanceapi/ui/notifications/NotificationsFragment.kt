@@ -49,7 +49,7 @@ class NotificationsFragment : Fragment() {
         //val texts = this.adapter.getList() as ArrayList
         //outState.putStringArrayList(STATE_LIST, texts)
         outState.putStringArrayList(STATE_LIST, items as java.util.ArrayList<String>)
-        outState.putBoolean(STATE_TIMER, timerOn)
+        outState.putBoolean(STATE_TIMER, true)
     }
 
 
@@ -149,6 +149,7 @@ class NotificationsFragment : Fragment() {
             items = items.plus(notificationsText).toMutableList()
             adapter.clear()
             adapter.addAll(items)
+            adapter.notifyDataSetChanged()
         }
     }
 }
