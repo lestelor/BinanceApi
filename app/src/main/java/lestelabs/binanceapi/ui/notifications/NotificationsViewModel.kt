@@ -9,7 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import lestelabs.binanceapi.MainActivity
 
-val TAG = "NotificationsViewModel"
+private val TAG = "NotificationsViewModel"
 
 interface ListenerNotificationViewModel {
     fun sendNotification(notification: String)

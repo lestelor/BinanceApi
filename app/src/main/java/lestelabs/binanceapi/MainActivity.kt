@@ -30,12 +30,16 @@ import lestelabs.binanceapi.foreground.RestartBroadcastReceiver
 import android.os.PowerManager
 import android.provider.Settings
 import androidx.annotation.RequiresApi
+import kotlinx.android.synthetic.main.fragment_notifications.*
+import lestelabs.binanceapi.ui.home.HomeFragment
+import lestelabs.binanceapi.ui.notifications.NotificationsFragment
 
 
 interface RetrieveDataInterface {
     fun retrieveDataInterface():Binance
 }
 
+private var repetition = 0
 
 class MainActivity : AppCompatActivity(), RetrieveDataInterface {
 
@@ -48,6 +52,7 @@ class MainActivity : AppCompatActivity(), RetrieveDataInterface {
     lateinit var builder: Notification.Builder
     private val channelId = "i.apps.notifications"
     private val description = "Test notification"
+
 
 
 
@@ -249,11 +254,17 @@ class MainActivity : AppCompatActivity(), RetrieveDataInterface {
 
     override fun onPause() {
         super.onPause()
+        Log.d(TAG, "Timer Activity OnPause")
         //mainHandler.removeCallbacks(binanceKeepAlive)
     }
 
     override fun onResume() {
         super.onResume()
+        Log.d(TAG, "Timer Activity OnResume repetition $repetition")
+        if (repetition !=0) {
+            NotificationsFragment().init_list(view = binding.root)
+        }
+        repetition += 1
         //mainHandler.post(binanceKeepAlive)
 
     }

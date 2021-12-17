@@ -21,6 +21,8 @@ import kotlin.collections.ArrayList
 
 const val STATE_LIST = "List Notifications Adapter Data"
 const val STATE_TIMER = "Timer is on"
+private const val TAG = "Notifications Fragment"
+
 var items: MutableList<String> = mutableListOf()
 var timer: Long = 0
 var timerOn = false
@@ -44,13 +46,16 @@ class NotificationsFragment : Fragment() {
     lateinit var binance: Binance
     lateinit var notifications: Notifications
 
+/*
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
+        Log.d(TAG, "timer Home OnSavedInstanceState")
         //val texts = this.adapter.getList() as ArrayList
         //outState.putStringArrayList(STATE_LIST, texts)
         outState.putStringArrayList(STATE_LIST, items as java.util.ArrayList<String>)
         outState.putBoolean(STATE_TIMER, true)
     }
+*/
 
 
     override fun onCreateView(
@@ -58,6 +63,7 @@ class NotificationsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        Log.d(TAG, "timer Home OnCreateView")
         notificationsViewModel =
             ViewModelProvider(this).get(NotificationsViewModel::class.java)
 
@@ -78,18 +84,20 @@ class NotificationsFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState);
+        Log.d(TAG, "timer Home OnActivityCreated")
         //If restoring from state, load the list from the bundle
-        if (savedInstanceState != null) {
+/*        if (savedInstanceState != null) {
             items =
                 savedInstanceState.getStringArray(STATE_LIST) as MutableList<String>
             timerOn = savedInstanceState.getBoolean(STATE_TIMER)
-            adapter = NotificationAdapter(requireActivity(), items)
-        }
+            //adapter = NotificationAdapter(requireActivity(), items)
+        }*/
 
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        Log.d(TAG, "timer Home OnDestroyView")
         _binding = null
     }
 
@@ -97,7 +105,7 @@ class NotificationsFragment : Fragment() {
         // Construct the data source
         //val texts: MutableList<String> = adapter.mNotifications?: mutableListOf()
         // Create the adapter to convert the array to views
-        adapter = NotificationAdapter(requireActivity(), items?: mutableListOf())
+        adapter = NotificationAdapter(view.context, items?: mutableListOf())
         // Attach the adapter to a ListView
         view.NotificationsList.adapter = adapter
     }
@@ -145,7 +153,7 @@ class NotificationsFragment : Fragment() {
                 binance.getCandlesticks()
             }
             val notificationsText = notifications.checkIfSendBuySellNotification(candlesticks)
-            //notificationsViewModel.notificationPutText(notificationsText)
+            //notificationsViewModel.notificationPutText(listOf())
             items = items.plus(notificationsText).toMutableList()
             adapter.clear()
             adapter.addAll(items)
