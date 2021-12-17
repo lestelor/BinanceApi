@@ -261,9 +261,9 @@ class MainActivity : AppCompatActivity(), RetrieveDataInterface {
     override fun onResume() {
         super.onResume()
         Log.d(TAG, "Timer Activity OnResume repetition $repetition")
-        if (repetition !=0) {
+/*        if (repetition !=0) {
             NotificationsFragment().init_list(view = binding.root)
-        }
+        }*/
         repetition += 1
         //mainHandler.post(binanceKeepAlive)
 
